@@ -1,0 +1,24 @@
+<div>
+    <p></p>
+    <h3>Регистрация</h3>
+    <p></p>
+    <form novalidate>
+        <label>Имя пользователя
+            <input class="form-control" type="text" placeholder="Имя пользователя" ng-model="userDto.username">
+        </label>
+        <p></p>
+        <label>Почта
+            <input class="form-control" type="text" placeholder="Почта" ng-model="userDto.email">
+        </label>
+        <p></p>
+        <label for="password">Пароль</label><input class="form-control" type="password" name="password" id="password" placeholder="Пароль"/>
+        <p></p>
+        <label for="confirm_password">Подтверждение пароля</label><input class="form-control" type="password" name="confirm_password" id="confirm_password" placeholder="Подтвердите пароль" ng-model="userDto.password" ng-change="checkPassword()"/>
+        <span id="message"></span>
+        <span id="response"></span>
+        <p></p>
+    </form>
+
+    <button class="btn btn-primary" ng-click="registerUser()" ng-show="checkPassword()">Регистрация</button>
+
+</div>

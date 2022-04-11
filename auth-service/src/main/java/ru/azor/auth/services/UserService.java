@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
 import ru.azor.auth.repositories.UserRepository;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -33,5 +34,14 @@ public class UserService implements UserDetailsService {
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    public Boolean isUsernamePresent(String username) {
+        String returnUsername = userRepository.findUsernameUsingUsername(username);
+        return returnUsername != null && returnUsername.equals(username);
     }
 }
