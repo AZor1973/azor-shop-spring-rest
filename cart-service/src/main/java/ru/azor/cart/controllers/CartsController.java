@@ -3,7 +3,7 @@ package ru.azor.cart.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.carts.CartDto;
-import ru.azor.api.dto.StringResponse;
+import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.cart.converters.CartConverter;
 import ru.azor.cart.services.CartService;
 
@@ -20,8 +20,8 @@ public class CartsController {
     }
 
     @GetMapping("/generate")
-    public StringResponse getCart() {
-        return new StringResponse(cartService.generateCartUuid());
+    public StringResponseRequestDto getCart() {
+        return StringResponseRequestDto.builder().value(cartService.generateCartUuid()).build();
     }
 
     @GetMapping("/{uuid}/add/{productId}")

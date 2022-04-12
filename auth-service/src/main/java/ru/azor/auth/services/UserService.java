@@ -44,4 +44,9 @@ public class UserService implements UserDetailsService {
         String returnUsername = userRepository.findUsernameUsingUsername(username);
         return returnUsername != null && returnUsername.equals(username);
     }
+
+    public Boolean isEmailPresent(String email) {
+        String returnEmail = userRepository.findEmailUsingEmail(email);
+        return returnEmail != null && returnEmail.equals(email);
+    }
 }

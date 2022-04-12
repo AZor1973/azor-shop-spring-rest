@@ -12,11 +12,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.azor.api.dto.StringResponse;
+import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.api.exceptions.AppError;
 import ru.azor.auth.converters.UserConverter;
-import ru.azor.auth.dto.JwtRequest;
-import ru.azor.auth.dto.JwtResponse;
 import ru.azor.api.auth.UserDto;
 import ru.azor.auth.services.UserService;
 import ru.azor.auth.utils.JwtTokenUtil;
@@ -34,7 +32,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/auth")
-    public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
+    public ResponseEntity<?> createAuthToken(@RequestBody StringResponseRequestDto authRequest) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
@@ -42,27 +40,29 @@ public class AuthController {
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);
-        return ResponseEntity.ok(new JwtResponse(token));
+        return ResponseEntity.ok(StringResponseRequestDto.builder().token(token).build());
     }
 
     @PostMapping("/registration")
-    public StringResponse registration(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
-        StringResponse stringResponse = new StringResponse();
+    public StringResponseRequestDto registration(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
+        String response;
         HttpStatus httpStatus;
         List<String> errors = bindingResult.getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
         if (bindingResult.hasErrors()) {
-            stringResponse.setValue(String.join(" ,", errors));
+            response = String.join(" ,", errors);
             httpStatus = HttpStatus.BAD_REQUEST;
         } else if (userService.isUsernamePresent(userDto.getUsername())) {
-            stringResponse.setValue("Пользователь с таким именем уже существует");
+            response = "Пользователь с таким именем уже существует";
+            httpStatus = HttpStatus.CONFLICT;
+        } else if (userService.isEmailPresent(userDto.getEmail())) {
+            response = "Пользователь с таким адресом электронной почты уже существует";
             httpStatus = HttpStatus.CONFLICT;
         } else {
             userService.save(userConverter.dtoToEntity(userDto));
-            stringResponse.setValue("Новый пользователь создан");
+            response = "Новый пользователь создан";
             httpStatus = HttpStatus.CREATED;
         }
-        String responseString = stringResponse.getValue();
-        return new StringResponse(responseString, httpStatus);
+        return StringResponseRequestDto.builder().value(response).httpStatus(httpStatus).build();
     }
 }
