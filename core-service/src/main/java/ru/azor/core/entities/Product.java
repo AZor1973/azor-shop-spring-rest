@@ -4,11 +4,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Table(name = "products")
@@ -30,7 +29,7 @@ public class Product {
     @JoinTable(name = "products_categories",
             joinColumns = @JoinColumn(name = "product_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Collection<Category> categories;
+    private Set<Category> categories;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -40,9 +39,10 @@ public class Product {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Product(Long id, String title, BigDecimal price) {
+    public Product(Long id, String title, BigDecimal price, Set<Category> categories) {
         this.id = id;
         this.title = title;
         this.price = price;
+        this.categories = categories;
     }
 }

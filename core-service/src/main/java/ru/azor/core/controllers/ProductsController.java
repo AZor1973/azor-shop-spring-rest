@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.ProductConverter;
+import ru.azor.core.entities.Category;
 import ru.azor.core.entities.Product;
 import ru.azor.core.services.ProductsService;
 import ru.azor.core.validators.ProductValidator;
@@ -39,13 +40,14 @@ public class ProductsController {
             @RequestParam(name = "p", defaultValue = "1") Integer page,
             @RequestParam(name = "min_price", required = false) Integer minPrice,
             @RequestParam(name = "max_price", required = false) Integer maxPrice,
-            @RequestParam(name = "title_part", required = false) String titlePart
-    ) {
+            @RequestParam(name = "title_part", required = false) String titlePart,
+            @RequestParam(name = "category_title", required = false) String categoryTitle
+            ) {
         if (page < 1) {
             page = 1;
         }
-        return productsService.findAll(minPrice, maxPrice, titlePart, page).map(
-                p -> productConverter.entityToDto(p)
+        return productsService.findAll(minPrice, maxPrice, titlePart, categoryTitle, page).map(
+                productConverter::productToProductDto
         );
     }
 
@@ -63,22 +65,22 @@ public class ProductsController {
             @PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id
     ) {
         Product product = productsService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found, id: " + id));
-        return productConverter.entityToDto(product);
+        return productConverter.productToProductDto(product);
     }
 
     @PostMapping
     public ProductDto saveNewProduct(@RequestBody ProductDto productDto) {
         productValidator.validate(productDto);
-        Product product = productConverter.dtoToEntity(productDto);
+        Product product = productConverter.productDtoToProduct(productDto);
         product = productsService.save(product);
-        return productConverter.entityToDto(product);
+        return productConverter.productToProductDto(product);
     }
 
     @PutMapping
     public ProductDto updateProduct(@RequestBody ProductDto productDto) {
         productValidator.validate(productDto);
         Product product = productsService.update(productDto);
-        return productConverter.entityToDto(product);
+        return productConverter.productToProductDto(product);
     }
 
     @DeleteMapping("/{id}")

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.core.entities.Category;
 import ru.azor.core.entities.Product;
 import ru.azor.core.repositories.ProductsRepository;
 import ru.azor.core.repositories.specifications.ProductsSpecifications;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class ProductsService {
     private final ProductsRepository productsRepository;
 
-    public Page<Product> findAll(Integer minPrice, Integer maxPrice, String partTitle, Integer page) {
+    public Page<Product> findAll(Integer minPrice, Integer maxPrice, String partTitle, String category, Integer page) {
         Specification<Product> spec = Specification.where(null);
         if (minPrice != null) {
             spec = spec.and(ProductsSpecifications.priceGreaterOrEqualsThan(minPrice));
@@ -29,6 +30,9 @@ public class ProductsService {
         }
         if (partTitle != null) {
             spec = spec.and(ProductsSpecifications.titleLike(partTitle));
+        }
+        if (category != null) {
+            spec = spec.and(ProductsSpecifications.findByCategory(category));
         }
 
         return productsRepository.findAll(spec, PageRequest.of(page - 1, 8));
