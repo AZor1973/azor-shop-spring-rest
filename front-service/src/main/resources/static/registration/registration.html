@@ -3,12 +3,21 @@
     <h3>Регистрация</h3>
     <p></p>
     <form novalidate>
-        <label>Имя пользователя
-            <input class="form-control" type="text" placeholder="Имя пользователя" ng-model="userDto.username">
+        <label>Имя
+            <input class="form-control" type="text" placeholder="Имя" ng-click="cleanResponse()" ng-model="userDto.firstname">
+        </label>
+        <label>Фамилия
+            <input class="form-control" type="text" placeholder="Фамилия" ng-model="userDto.lastname">
+        </label>
+        <label>Ник
+            <input class="form-control" type="text" placeholder="Ник" ng-model="userDto.username">
         </label>
         <p></p>
         <label>Почта
             <input class="form-control" type="text" placeholder="Почта" ng-model="userDto.email">
+        </label>
+        <label>Телефон
+            <input class="form-control" type="text" placeholder="Телефон" ng-model="userDto.phone">
         </label>
         <p></p>
         <label for="password">Пароль</label><input class="form-control" type="password" name="password" id="password" placeholder="Пароль"/>
@@ -21,4 +30,14 @@
 
     <button class="btn btn-primary" ng-click="registerUser()" ng-show="checkPassword()">Регистрация</button>
 
+    <div ng-show="isRegister">
+        <p>На указанную вами при регистрации почту
+            выслано письмо с кодом подтверждения.
+            Для продолжения введите полученный код:</p>
+        <p></p>
+        <form novalidate>
+            <input class="form-control" type="text" placeholder="Введите код" ng-model="stringResponseRequestDto.value">
+        </form>
+        <button class="btn btn-primary" ng-click="confirmRegistration()">Подтвердить</button>
+    </div>
 </div>

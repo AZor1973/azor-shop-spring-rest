@@ -21,10 +21,26 @@ public class UserConverter {
     public User dtoToEntity(UserDto userDto) {
         Role role = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("ROLE_USER не найдена"));
-        return new User(userDto.getId(), userDto.getUsername(), encoder.encode(userDto.getPassword()), userDto.getEmail(), new HashSet<>(Set.of(role)));
+        return User.builder()
+                .username(userDto.getUsername())
+                .firstname(userDto.getFirstname())
+                .lastname(userDto.getLastname())
+                .email(userDto.getEmail())
+                .phone(userDto.getPhone())
+                .password(encoder.encode(userDto.getPassword()))
+                .status(User.AccountStatus.NOT_ACTIVE)
+                .roles(new HashSet<>(Set.of(role)))
+                .build();
     }
 
     public UserDto entityToDto(User user) {
-        return new UserDto(user.getId(), user.getUsername(), null, user.getEmail());
+        return UserDto.builder()
+                .id(user.getId())
+                .firstname(user.getFirstname())
+                .lastname(user.getLastname())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phone(user.getPhone())
+                .build();
     }
 }

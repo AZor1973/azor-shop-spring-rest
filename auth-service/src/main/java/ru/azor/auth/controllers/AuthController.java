@@ -16,20 +16,26 @@ import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.api.exceptions.AppError;
 import ru.azor.auth.converters.UserConverter;
 import ru.azor.api.auth.UserDto;
+import ru.azor.auth.services.MailService;
 import ru.azor.auth.services.UserService;
 import ru.azor.auth.utils.JwtTokenUtil;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
+    private final MailService mailService;
     private final UserConverter userConverter;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
+    private final Map<String, Integer> codes = new ConcurrentHashMap<>();
 
     @PostMapping("/auth")
     public ResponseEntity<?> createAuthToken(@RequestBody StringResponseRequestDto authRequest) {
@@ -40,6 +46,7 @@ public class AuthController {
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);
+        codes.remove(authRequest.getUsername());
         return ResponseEntity.ok(StringResponseRequestDto.builder().token(token).build());
     }
 
@@ -60,9 +67,27 @@ public class AuthController {
             httpStatus = HttpStatus.CONFLICT;
         } else {
             userService.save(userConverter.dtoToEntity(userDto));
+            int code = new Random().nextInt(9000) + 1000;
+            codes.put(userDto.getUsername(), code);
+            mailService.sendMail(userDto.getEmail(), "Подтверждение регистрации", "Код для подтверждения регистрации: " + code);
             response = "Новый пользователь создан";
             httpStatus = HttpStatus.CREATED;
         }
-        return StringResponseRequestDto.builder().value(response).httpStatus(httpStatus).build();
+        return StringResponseRequestDto.builder().value(response)
+                .httpStatus(httpStatus).build();
+    }
+
+    @PostMapping("/confirm_registration")
+    public StringResponseRequestDto confirmRegistration(@RequestBody StringResponseRequestDto inputCode) {
+        int code = codes.get(inputCode.getUsername());
+        if (code == Integer.parseInt(inputCode.getValue())) {
+            userService.activateUser(inputCode.getUsername());
+            return StringResponseRequestDto.builder().value("OK")
+                    .httpStatus(HttpStatus.OK)
+                    .build();
+        }
+        return StringResponseRequestDto.builder().value("Неправильный код")
+                .httpStatus(HttpStatus.CONFLICT)
+                .build();
     }
 }

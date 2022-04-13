@@ -1,6 +1,7 @@
 package ru.azor.auth.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -14,21 +15,29 @@ import java.util.Collection;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
+    @Column(name = "firstname")
+    private String firstname;
+    @Column(name = "lastname")
+    private String lastname;
     @Column(name = "username")
     private String username;
-
     @Column(name = "password")
     private String password;
-
     @Column(name = "email")
     private String email;
+    @Column(name = "phone")
+    private String phone;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    @Builder.Default
+    private AccountStatus status = AccountStatus.NOT_ACTIVE;
 
     @ManyToMany
     @JoinTable(name = "users_roles",
@@ -44,11 +53,20 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public User(Long id, String username, String password, String email, Collection<Role> roles) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.roles = roles;
+    @Builder.Default
+    @Column(name = "account_non_expired")
+    private boolean accountNonExpired = true;
+    @Builder.Default
+    @Column(name = "account_non_locked")
+    private boolean accountNonLocked = true;
+    @Builder.Default
+    @Column(name = "credentials_non_expired")
+    private boolean credentialsNonExpired = true;
+    @Builder.Default
+    @Column(name = "enabled")
+    private boolean enabled = false;
+
+    public enum AccountStatus {
+        ACTIVE, NOT_ACTIVE, DELETED
     }
 }

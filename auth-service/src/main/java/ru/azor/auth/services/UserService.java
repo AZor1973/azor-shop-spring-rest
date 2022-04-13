@@ -49,4 +49,10 @@ public class UserService implements UserDetailsService {
         String returnEmail = userRepository.findEmailUsingEmail(email);
         return returnEmail != null && returnEmail.equals(email);
     }
+
+    @Transactional
+    public void activateUser(String username) {
+        userRepository.updateUserStatus(User.AccountStatus.ACTIVE, username);
+        userRepository.updateUserEnabled(true, username);
+    }
 }

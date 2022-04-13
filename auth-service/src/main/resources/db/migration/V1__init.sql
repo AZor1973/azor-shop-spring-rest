@@ -1,11 +1,19 @@
 create table users
 (
     id         bigserial primary key,
+    firstname  varchar(80) not null,
+    lastname   varchar(80) not null,
     username   varchar(36) not null unique,
     password   varchar(80) not null,
     email      varchar(50) unique,
+    phone      varchar(20) not null,
+    status     varchar(20) not null,
     created_at timestamp default current_timestamp,
-    updated_at timestamp default current_timestamp
+    updated_at timestamp default current_timestamp,
+    account_non_expired boolean not null,
+    account_non_locked boolean not null,
+    credentials_non_expired boolean not null,
+    enabled boolean not null
 );
 
 create table roles
@@ -24,18 +32,6 @@ create table users_roles
     updated_at timestamp default current_timestamp,
     primary key (user_id, role_id)
 );
-
-insert into roles (name)
-values ('ROLE_USER'),
-       ('ROLE_ADMIN');
-
-insert into users (username, password, email)
-values ('bob', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i', 'bob_johnson@gmail.com'),
-       ('john', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i', 'john_johnson@gmail.com');
-
-insert into users_roles (user_id, role_id)
-values (1, 1),
-       (2, 2);
 
 
 
