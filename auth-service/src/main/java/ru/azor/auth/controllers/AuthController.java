@@ -82,7 +82,12 @@ public class AuthController {
         int code = codes.get(inputCode.getUsername());
         if (code == Integer.parseInt(inputCode.getValue())) {
             userService.activateUser(inputCode.getUsername());
+
+            UserDetails userDetails = userService.loadUserByUsername(inputCode.getUsername());
+            String token = jwtTokenUtil.generateToken(userDetails);
+            codes.remove(inputCode.getUsername());
             return StringResponseRequestDto.builder().value("OK")
+                    .token(token)
                     .httpStatus(HttpStatus.OK)
                     .build();
         }

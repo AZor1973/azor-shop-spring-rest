@@ -1,4 +1,4 @@
-angular.module('market-front').controller('registrationController', function ($scope, $http, $location) {
+angular.module('market-front').controller('registrationController', function ($scope, $http, $location, $localStorage) {
     const contextPath = 'http://localhost:5555/auth/';
     $scope.isRegister = false;
     $scope.registerUser = function () {
@@ -19,7 +19,18 @@ angular.module('market-front').controller('registrationController', function ($s
         $http.post(contextPath + 'confirm_registration', $scope.stringResponseRequestDto)
             .then(function (response) {
                 $scope.stringResponseRequestDto = null;
-                if (response.data.value === 'OK') {
+
+                if (response.data.token) {
+                    $http.defaults.headers.common.Authorization = 'Bearer ' + response.data.token;
+                    $localStorage.springWebUser = {username: $scope.username, token: response.data.token};
+                    //
+                    // $scope.username = null;
+                    // $scope.password = null;
+
+                    $http.get('http://localhost:5555/cart/api/v1/cart/' + $localStorage.springWebGuestCartId + '/merge')
+                        .then(function successCallback(response) {
+                        });
+
                     $location.path('/');
                 } else {
                     document.getElementById('response').innerHTML = response.data.value;
