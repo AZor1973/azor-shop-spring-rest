@@ -7,20 +7,16 @@ utils:
     prefix: SPRING_WEB_
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:mydatabase;MODE=PostgreSQL
-    username: sa
-    password:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+    url: jdbc:postgresql://localhost:5434/azor-shop-spring-rest-core
   jpa:
     show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-  h2:
-    console:
-      enabled: true
-      settings:
-        web-allow-others: false
+        ddl-auto: create-drop
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 integrations:
   cart-service:
     url: http://localhost:5555/cart

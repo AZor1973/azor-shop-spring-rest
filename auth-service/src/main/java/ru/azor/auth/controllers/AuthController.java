@@ -1,7 +1,6 @@
 package ru.azor.auth.controllers;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,25 +13,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.api.exceptions.AppError;
-import ru.azor.auth.converters.UserConverter;
 import ru.azor.api.auth.UserDto;
-import ru.azor.auth.services.MailService;
 import ru.azor.auth.services.UserService;
 import ru.azor.auth.utils.JwtTokenUtil;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
-    private final MailService mailService;
-    private final UserConverter userConverter;
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
     private final Map<String, Integer> codes = new ConcurrentHashMap<>();
@@ -52,29 +44,11 @@ public class AuthController {
 
     @PostMapping("/registration")
     public StringResponseRequestDto registration(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
-        String response;
-        HttpStatus httpStatus;
-        List<String> errors = bindingResult.getAllErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
-        if (bindingResult.hasErrors()) {
-            response = String.join(" ,", errors);
-            httpStatus = HttpStatus.BAD_REQUEST;
-        } else if (userService.isUsernamePresent(userDto.getUsername())) {
-            response = "Пользователь с таким именем уже существует";
-            httpStatus = HttpStatus.CONFLICT;
-        } else if (userService.isEmailPresent(userDto.getEmail())) {
-            response = "Пользователь с таким адресом электронной почты уже существует";
-            httpStatus = HttpStatus.CONFLICT;
-        } else {
-            userService.save(userConverter.dtoToEntity(userDto));
-            int code = new Random().nextInt(9000) + 1000;
-            codes.put(userDto.getUsername(), code);
-            mailService.sendMail(userDto.getEmail(), "Подтверждение регистрации", "Код для подтверждения регистрации: " + code);
-            response = "Новый пользователь создан";
-            httpStatus = HttpStatus.CREATED;
+        StringResponseRequestDto response = userService.getStringResponseRequestDto(userDto, bindingResult);
+        if (response.getHttpStatus() == HttpStatus.CREATED){
+            codes.put(userDto.getUsername(), Integer.parseInt(response.getPassword()));
         }
-        return StringResponseRequestDto.builder().value(response)
-                .httpStatus(httpStatus).build();
+        return response;
     }
 
     @PostMapping("/confirm_registration")

@@ -17,7 +17,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
-    url: jdbc:postgresql://localhost:5433/postgres
+    url: jdbc:postgresql://localhost:5433/azor-shop-spring-rest-auth
   jpa:
     show-sql: true
     properties:
@@ -28,7 +28,7 @@ spring:
     host: 'smtp.gmail.com'
     port: 587
     username: 'andreyzorin494'
-    password: 'GeekBrains'
+    password: 'Andrian0+'
     properties:
       mail:
         smtp:

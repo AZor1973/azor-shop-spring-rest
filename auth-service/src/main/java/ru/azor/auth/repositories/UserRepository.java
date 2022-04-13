@@ -12,11 +12,11 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
-    @Query("select u.username from User u where u.username = ?1")
-    String findUsernameUsingUsername(String username);
+    @Query("select count(u) from User u where u.username = ?1")
+    Long isUsernamePresent(String username);
 
-    @Query("select u.email from User u where u.email = ?1")
-    String findEmailUsingEmail(String email);
+    @Query("select count(u) from User u where u.email = ?1")
+    Long isEmailPresent(String email);
 
     @Modifying
     @Query("update User u set u.status = ?1 where u.username = ?2")

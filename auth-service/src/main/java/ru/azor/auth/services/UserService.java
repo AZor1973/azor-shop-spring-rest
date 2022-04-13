@@ -1,6 +1,8 @@
 package ru.azor.auth.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,11 +10,16 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import ru.azor.api.auth.UserDto;
+import ru.azor.api.dto.StringResponseRequestDto;
+import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
 import ru.azor.auth.repositories.UserRepository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,6 +27,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
+    private final UserConverter userConverter;
+    private final MailService mailService;
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -40,14 +49,38 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public StringResponseRequestDto getStringResponseRequestDto(UserDto userDto, BindingResult bindingResult) {
+        String response;
+        HttpStatus httpStatus;
+        int code = 0;
+        List<String> errors = bindingResult.getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+        if (bindingResult.hasErrors()) {
+            response = String.join(" ,", errors);
+            httpStatus = HttpStatus.BAD_REQUEST;
+        } else if (isUsernamePresent(userDto.getUsername())) {
+            response = "Пользователь с таким именем уже существует";
+            httpStatus = HttpStatus.CONFLICT;
+        } else if (isEmailPresent(userDto.getEmail())) {
+            response = "Пользователь с таким адресом электронной почты уже существует";
+            httpStatus = HttpStatus.CONFLICT;
+        } else {
+            save(userConverter.dtoToEntity(userDto));
+            code = mailService.sendMail(userDto.getEmail());
+            response = "Новый пользователь создан";
+            httpStatus = HttpStatus.CREATED;
+        }
+        return StringResponseRequestDto.builder().value(response)
+                .password(String.valueOf(code))
+                .httpStatus(httpStatus).build();
+    }
+
     public Boolean isUsernamePresent(String username) {
-        String returnUsername = userRepository.findUsernameUsingUsername(username);
-        return returnUsername != null && returnUsername.equals(username);
+      return userRepository.isUsernamePresent(username) > 0;
     }
 
     public Boolean isEmailPresent(String email) {
-        String returnEmail = userRepository.findEmailUsingEmail(email);
-        return returnEmail != null && returnEmail.equals(email);
+        return userRepository.isEmailPresent(email) > 0;
     }
 
     @Transactional
