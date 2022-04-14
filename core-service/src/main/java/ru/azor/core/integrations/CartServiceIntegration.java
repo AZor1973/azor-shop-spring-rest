@@ -41,8 +41,6 @@ public class CartServiceIntegration {
                                 }
                         )
                 )
-//                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new CartServiceIntegrationException("Выполнен некорректный запрос к сервису корзин")))
-//                .onStatus(HttpStatus::is5xxServerError, clientResponse -> Mono.error(new CartServiceIntegrationException("Сервис корзин сломался")))
                 .bodyToMono(CartDto.class)
                 .block();
         return cart;

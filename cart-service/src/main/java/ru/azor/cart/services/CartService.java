@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import ru.azor.api.core.ProductDto;
-import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.cart.integrations.ProductsServiceIntegration;
 import ru.azor.cart.models.Cart;
 
@@ -37,7 +36,7 @@ public class CartService {
     }
 
     public void addToCart(String cartKey, Long productId) {
-        ProductDto productDto = productsServiceIntegration.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Невозможно добавить продукт в корзину. Продукт не найдет, id: " + productId));
+        ProductDto productDto = productsServiceIntegration.findById(productId);
         execute(cartKey, c -> {
             c.add(productDto);
         });

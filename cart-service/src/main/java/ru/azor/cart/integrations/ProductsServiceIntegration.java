@@ -1,23 +1,37 @@
 package ru.azor.cart.integrations;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.core.ProductDto;
-
-import java.util.Optional;
+import ru.azor.api.exceptions.CoreServiceAppError;
+import ru.azor.cart.exceptions.ProductServiceIntegrationException;
 
 @Component
 @RequiredArgsConstructor
 public class ProductsServiceIntegration {
-    private final RestTemplate restTemplate;
+    private final WebClient coreServiceWebClient;
 
-    @Value("${integrations.core-service.url}")
-    private String productServiceUrl;
-
-    public Optional<ProductDto> findById(Long id) {
-        ProductDto productDto = restTemplate.getForObject(productServiceUrl + "/api/v1/products/" + id, ProductDto.class);
-        return Optional.ofNullable(productDto);
+    public ProductDto findById(Long id) {
+        return coreServiceWebClient.get()
+                .uri("/api/v1/products/" + id)
+                .header("productId", String.valueOf(id))
+                .retrieve()
+                .onStatus(
+                        httpStatus -> httpStatus.is4xxClientError(), // HttpStatus::is4xxClientError
+                        clientResponse -> clientResponse.bodyToMono(CoreServiceAppError.class).map(
+                                body -> {
+                                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.PRODUCT_NOT_FOUND.name())) {
+                                        return new ProductServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: продукт не найден");
+                                    }
+                                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_IS_BROKEN.name())) {
+                                        return new ProductServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: сервис сломан");
+                                    }
+                                    return new ProductServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: причина неизвестна");
+                                }
+                        )
+                )
+                .bodyToMono(ProductDto.class)
+                .block();
     }
 }
