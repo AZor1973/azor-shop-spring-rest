@@ -17,6 +17,6 @@ public class ProductsSpecifications {
     }
 
     public static Specification<Product> findByCategory(final String categoryTitle) {
-        return (root, arg1, cb) -> cb.equal(root.join("categories").get("title"), categoryTitle);
+        return (root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.join("categories").get("title"), categoryTitle);
     }
 }

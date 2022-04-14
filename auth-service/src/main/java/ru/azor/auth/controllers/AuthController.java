@@ -43,16 +43,16 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
-    public StringResponseRequestDto registration(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<?> registration(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
         StringResponseRequestDto response = userService.getStringResponseRequestDto(userDto, bindingResult);
         if (response.getHttpStatus() == HttpStatus.CREATED){
             codes.put(userDto.getUsername(), Integer.parseInt(response.getPassword()));
         }
-        return response;
+        return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
     @PostMapping("/confirm_registration")
-    public StringResponseRequestDto confirmRegistration(@RequestBody StringResponseRequestDto inputCode) {
+    public ResponseEntity<?> confirmRegistration(@RequestBody StringResponseRequestDto inputCode) {
         int code = codes.get(inputCode.getUsername());
         if (code == Integer.parseInt(inputCode.getValue())) {
             userService.activateUser(inputCode.getUsername());
@@ -60,13 +60,11 @@ public class AuthController {
             UserDetails userDetails = userService.loadUserByUsername(inputCode.getUsername());
             String token = jwtTokenUtil.generateToken(userDetails);
             codes.remove(inputCode.getUsername());
-            return StringResponseRequestDto.builder().value("OK")
+            return new ResponseEntity<>(StringResponseRequestDto.builder().value("OK")
                     .token(token)
-                    .httpStatus(HttpStatus.OK)
-                    .build();
+                    .build(), HttpStatus.OK);
         }
-        return StringResponseRequestDto.builder().value("Неправильный код")
-                .httpStatus(HttpStatus.CONFLICT)
-                .build();
+        return new ResponseEntity<>(StringResponseRequestDto.builder().value("Неправильный код")
+                .build(), HttpStatus.CONFLICT);
     }
 }
