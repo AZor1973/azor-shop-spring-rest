@@ -34,6 +34,11 @@ public class CartsController {
         cartService.decrementItem(getCurrentCartUuid(username, uuid), productId);
     }
 
+    @GetMapping("/{uuid}/increment/{productId}")
+    public void increment(@RequestHeader(required = false) String username, @PathVariable String uuid, @PathVariable Long productId) {
+        cartService.incrementItem(getCurrentCartUuid(username, uuid), productId);
+    }
+
     @GetMapping("/{uuid}/remove/{productId}")
     public void remove(@RequestHeader(required = false) String username, @PathVariable String uuid, @PathVariable Long productId) {
         cartService.removeItemFromCart(getCurrentCartUuid(username, uuid), productId);

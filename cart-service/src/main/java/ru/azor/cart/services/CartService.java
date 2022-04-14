@@ -54,6 +54,10 @@ public class CartService {
         execute(cartKey, c -> c.decrement(productId));
     }
 
+    public void incrementItem(String cartKey, Long productId) {
+        execute(cartKey, c -> c.increment(productId));
+    }
+
     public void merge(String userCartKey, String guestCartKey) {
         Cart guestCart = getCurrentCart(guestCartKey);
         Cart userCart = getCurrentCart(userCartKey);

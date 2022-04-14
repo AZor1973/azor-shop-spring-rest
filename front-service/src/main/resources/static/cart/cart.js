@@ -32,5 +32,26 @@ angular.module('market-front').controller('cartController', function ($scope, $h
         });
     };
 
+    $scope.decrementQuantityOfCartItem = function (productId) {
+        $http.get(contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId + '/decrement/' + productId)
+            .then(function (response) {
+            $scope.loadCart();
+        });
+    }
+
+    $scope.incrementQuantityOfCartItem = function (productId) {
+        $http.get(contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId + '/increment/' + productId)
+            .then(function (response) {
+            $scope.loadCart();
+        });
+    }
+
+    $scope.deleteCartItemFromCart = function (productId) {
+        $http.get(contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId + '/remove/' + productId)
+            .then(function (response) {
+                $scope.loadCart();
+            });
+    }
+
     $scope.loadCart();
 });

@@ -51,6 +51,16 @@ public class Cart {
         }
     }
 
+    public void increment(Long productId) {
+        for (CartItem o : items) {
+            if (o.getProductId().equals(productId)) {
+                o.changeQuantity(1);
+                recalculate();
+                return;
+            }
+        }
+    }
+
     public void remove(Long productId) {
         items.removeIf(o -> o.getProductId().equals(productId));
         recalculate();
