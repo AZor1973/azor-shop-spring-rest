@@ -12,10 +12,6 @@ import java.util.stream.Collectors;
 public class OrderConverter {
     private final OrderItemConverter orderItemConverter;
 
-    public Order dtoToEntity(OrderDto orderDto) {
-        throw new UnsupportedOperationException();
-    }
-
     public OrderDto entityToDto(Order order) {
         OrderDto out = new OrderDto();
         out.setId(order.getId());
