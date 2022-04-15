@@ -1,14 +1,19 @@
 package ru.azor.core.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.core.OrderDto;
+import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.OrderConverter;
 import ru.azor.core.services.OrderService;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +25,22 @@ public class OrdersController {
     private final OrderConverter orderConverter;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createOrder(@RequestHeader String username, @RequestBody OrderDetailsDto orderDetailsDto) {
+    public ResponseEntity<?> createOrder(@RequestHeader String username, @RequestBody @Valid OrderDetailsDto orderDetailsDto,
+                                         BindingResult bindingResult) {
+        String response;
+        HttpStatus httpStatus;
+        List<String> errors = bindingResult.getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+        if (bindingResult.hasErrors()) {
+            response = String.join(" ,", errors);
+            httpStatus = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(StringResponseRequestDto.builder()
+                    .value(response).build(), httpStatus);
+        }
         orderService.createOrder(username, orderDetailsDto);
+        httpStatus = HttpStatus.CREATED;
+        return new ResponseEntity<>(StringResponseRequestDto.builder()
+                .value("Order created").build(), httpStatus);
     }
 
     @GetMapping

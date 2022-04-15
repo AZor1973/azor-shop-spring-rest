@@ -4,7 +4,7 @@ server:
     context-path: /web-market-core
 utils:
   cart:
-    prefix: SPRING_WEB_
+    prefix: SPRING_WEB_APP_
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

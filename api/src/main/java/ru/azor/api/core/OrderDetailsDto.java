@@ -1,30 +1,19 @@
 package ru.azor.api.core;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderDetailsDto {
+    @NotBlank(message = "Поле адреса не должно быть пустым")
     private String address;
+    @NotBlank(message = "Поле телефона пользователя не должно быть пустым")
+    @Size(min = 5, message = "Длина номера телефона должна быть не менее 5 символов")
     private String phone;
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public OrderDetailsDto() {
-    }
-
-    public OrderDetailsDto(String address, String phone) {
-        this.address = address;
-        this.phone = phone;
-    }
 }

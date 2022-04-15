@@ -15,12 +15,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.api.enums.OrderStatus;
-import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.services.OrderService;
 import ru.azor.core.services.PayPalService;
-
 import java.io.IOException;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/v1/paypal")

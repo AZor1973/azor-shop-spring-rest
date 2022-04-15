@@ -7,8 +7,8 @@
     <groupId>ru.azor</groupId>
     <artifactId>api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo</name>
-    <description>Demo module for Educational Spring Web Rest Project</description>
+    <name>common</name>
+    <description>Common module for Educational Spring Web Rest Project</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

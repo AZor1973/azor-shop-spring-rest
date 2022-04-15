@@ -7,15 +7,15 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.5</version>
-        <relativePath/>
+        <version>2.5.6</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>ru.azor</groupId>
     <artifactId>gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>demo</name>
-    <description>Demo module for Educational Spring Web Rest Project</description>
+    <name>gateway</name>
+    <description>Gateway module for Educational Spring Web Rest Project</description>
 
     <properties>
         <java.version>11</java.version>
