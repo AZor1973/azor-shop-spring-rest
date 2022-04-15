@@ -13,10 +13,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import ru.azor.api.dto.StringResponseRequestDto;
+import ru.azor.api.enums.OrderStatus;
+import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.services.OrderService;
 import ru.azor.core.services.PayPalService;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/api/v1/paypal")
@@ -28,6 +32,11 @@ public class PayPalController {
 
     @PostMapping("/create/{orderId}")
     public ResponseEntity<?> createOrder(@PathVariable Long orderId) throws IOException {
+        if (orderService.isOrderStatusPresent(OrderStatus.PAID, orderId)) {
+            return new ResponseEntity<>(StringResponseRequestDto.builder()
+                    .value("Заказ оплачен")
+                    .build(), HttpStatus.CONFLICT);
+        }
         OrdersCreateRequest request = new OrdersCreateRequest();
         request.prefer("return=representation");
         request.requestBody(payPalService.createOrderRequest(orderId));
@@ -44,10 +53,7 @@ public class PayPalController {
         Order payPalOrder = response.result();
         if ("COMPLETED".equals(payPalOrder.status())) {
             long orderId = Long.parseLong(payPalOrder.purchaseUnits().get(0).referenceId());
-            // Optional<com.geekbrains.spring.web.core.entities.Order> orderOptional = orderService.findById(orderId);
-
-
-
+            orderService.changeOrderStatus(OrderStatus.PAID, orderId);
             return new ResponseEntity<>("Order completed!", HttpStatus.valueOf(response.statusCode()));
         }
         return new ResponseEntity<>(payPalOrder, HttpStatus.valueOf(response.statusCode()));

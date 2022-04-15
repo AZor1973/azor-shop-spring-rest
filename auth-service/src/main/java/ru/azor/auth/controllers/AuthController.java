@@ -44,7 +44,7 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody @Valid UserDto userDto, BindingResult bindingResult) {
-        StringResponseRequestDto response = userService.getStringResponseRequestDto(userDto, bindingResult);
+        StringResponseRequestDto response = userService.presave(userDto, bindingResult);
         if (response.getHttpStatus() == HttpStatus.CREATED){
             codes.put(userDto.getUsername(), Integer.parseInt(response.getPassword()));
         }

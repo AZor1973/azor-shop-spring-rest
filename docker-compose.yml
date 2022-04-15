@@ -1,18 +1,18 @@
 version: '3.8'
 services:
-  postgres-auth:
-    image: postgres:14.2
-    environment:
-      - POSTGRES_DB=azor-shop-spring-rest-auth
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - '5433:5432'
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-U", "postgres" ]
-      interval: 5s
-      timeout: 1s
-      retries: 2
+#  postgres-auth:
+#    image: postgres:14.2
+#    environment:
+#      - POSTGRES_DB=azor-shop-spring-rest-auth
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#    ports:
+#      - '5433:5432'
+#    healthcheck:
+#      test: [ "CMD", "pg_isready", "-q", "-U", "postgres" ]
+#      interval: 5s
+#      timeout: 1s
+#      retries: 2
 
   postgres-core:
     image: postgres:14.2
@@ -37,10 +37,10 @@ services:
 #    depends_on:
 #      - postgres
 
-  redis:
-    image: 'bitnami/redis:latest'
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    ports:
-      - "6379:6379"
+#  redis:
+#    image: 'bitnami/redis:latest'
+#    environment:
+#      - ALLOW_EMPTY_PASSWORD=yes
+#    ports:
+#      - "6379:6379"
 

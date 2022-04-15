@@ -1,10 +1,12 @@
 package ru.azor.core.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import ru.azor.api.enums.OrderStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -14,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Order {
@@ -36,6 +39,11 @@ public class Order {
 
     @Column(name = "phone")
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "order_status")
+    @Builder.Default
+    private OrderStatus orderStatus = OrderStatus.CREATED;
 
     @CreationTimestamp
     @Column(name = "created_at")

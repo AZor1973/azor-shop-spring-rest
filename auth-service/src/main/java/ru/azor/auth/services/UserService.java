@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public StringResponseRequestDto getStringResponseRequestDto(UserDto userDto, BindingResult bindingResult) {
+    public StringResponseRequestDto presave(UserDto userDto, BindingResult bindingResult) {
         String response;
         HttpStatus httpStatus;
         int code = 0;

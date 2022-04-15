@@ -12,5 +12,9 @@ angular.module('market-front').controller('ordersController', function ($scope, 
         $location.path('/order_pay/' + orderId);
     }
 
+    $scope.isOrderPaid = function (orderStatus){
+        return orderStatus === 'PAID';
+    }
+
     $scope.loadOrders();
 });

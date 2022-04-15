@@ -25,17 +25,17 @@ create table products_categories
 );
 
 insert into products (title, price)
-values ('Milk', 100.20),
-       ('Bread', 80.20),
-       ('Cheese', 90.20),
-       ('Cheese2', 90.00),
-       ('Cheese3', 90.00),
-       ('Cheese4', 90.00),
-       ('Cheese5', 90.00),
-       ('Cheese6', 90.00),
-       ('Cheese7', 90.00),
-       ('Cheese8', 90.00),
-       ('Cheese9', 90.00);
+values ('Milk', 50.20),
+       ('Bread', 20.20),
+       ('Cheese', 490.20),
+       ('Apple', 90.00),
+       ('Orange', 90.00),
+       ('Fish', 290.00),
+       ('Meat', 350.00),
+       ('Cabbage', 20.00),
+       ('Carrot', 18.00),
+       ('Onion', 32.00),
+       ('Candies', 450.00);
 
 create table orders
 (
@@ -44,6 +44,7 @@ create table orders
     total_price numeric(8, 2) not null,
     address     varchar(255),
     phone       varchar(255),
+    order_status varchar(20) not null,
     created_at  timestamp default current_timestamp,
     updated_at  timestamp default current_timestamp
 );
@@ -59,12 +60,6 @@ create table order_items
     created_at        timestamp default current_timestamp,
     updated_at        timestamp default current_timestamp
 );
-
-insert into orders (username, total_price, address, phone)
-values ('bob', 200.00, 'address', '12345');
-
-insert into order_items (product_id, order_id, quantity, price_per_product, price)
-values (1, 1, 2, 100.00, 200.00);
 
 
 

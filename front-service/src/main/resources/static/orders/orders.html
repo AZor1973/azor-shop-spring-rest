@@ -8,16 +8,17 @@
             <td>ID</td>
             <td>Адрес доставки</td>
             <td>Стоимость</td>
-            <td></td>
+            <td>Состояние</td>
         </tr>
         <tbody>
         <tr ng-repeat="order in MyOrders">
             <td>{{order.id}}</td>
             <td>{{order.address}}</td>
             <td>{{order.totalPrice}}</td>
-            <td>
+            <td ng-show="!isOrderPaid(order.orderStatus)">
                 <button class="btn btn-primary" ng-click="goToPay(order.id)">Оплатить</button>
             </td>
+            <td ng-show="isOrderPaid(order.orderStatus)">Заказ оплачен</td>
         </tr>
         </tbody>
     </table>
