@@ -19,6 +19,7 @@ public class CartStatisticService {
     @Value("${utils.statistic.key}")
     private String statisticKey;
     private final ConcurrentHashMap<ProductDto, Integer> currentStatistic = new ConcurrentHashMap<>();
+
     public ConcurrentHashMap<ProductDto, Integer> getAllStatistic() {
         if (Boolean.FALSE.equals(statisticalRedisTemplate.hasKey(statisticKey))) {
             statisticalRedisTemplate.opsForValue().set(statisticKey, new ConcurrentHashMap<>());
@@ -48,8 +49,16 @@ public class CartStatisticService {
 
     @Scheduled(cron = "${utils.statistic.add-cron}")
     @Async
-    public void loadStatisticToRedis(){
-        statisticalRedisTemplate.opsForValue().set(statisticKey, currentStatistic);
+    public void loadStatisticToRedis() {
+        ConcurrentHashMap<ProductDto, Integer> redisStatistic = getAllStatistic();
+        currentStatistic.forEach((key, value) -> {
+            if (redisStatistic.containsKey(key)){
+                redisStatistic.put(key, redisStatistic.get(key) + value);
+            }else {
+                redisStatistic.put(key, value);
+            }
+        });
+        statisticalRedisTemplate.opsForValue().set(statisticKey, redisStatistic);
     }
 
     @Scheduled(cron = "${utils.statistic.clear-cron}")
