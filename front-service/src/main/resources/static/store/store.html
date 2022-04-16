@@ -31,7 +31,21 @@
                 </div>
                 <p></p>
                 <button class="btn btn-outline-warning btn-sm" style="width: 100%;" type="submit">Применить</button>
+                <!--                <tr ng-repeat="p in recomList">-->
+                <!--                    <td>{{p.title}}</td>-->
+                <!--                </tr>-->
             </form>
+            <h4>Товар дня</h4>
+            <p></p>
+            <div ng-repeat="p in dailyRecomList">
+                {{p.title}}
+            </div>
+            <p></p>
+            <h4>Товар месяца</h4>
+            <p></p>
+            <div ng-repeat="p in monthlyRecomList">
+                {{p.title}}
+            </div>
         </div>
         <div class="col-sm-6 col-md-10">
             <table class="table table-hover">

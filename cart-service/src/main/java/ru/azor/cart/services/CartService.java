@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import ru.azor.api.core.ProductDto;
-import ru.azor.cart.integrations.ProductsServiceIntegration;
+import ru.azor.cart.integrations.CoreServiceIntegration;
 import ru.azor.cart.models.Cart;
 
 import java.util.UUID;
@@ -14,8 +14,9 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor
 public class CartService {
-    private final ProductsServiceIntegration productsServiceIntegration;
+    private final CoreServiceIntegration coreServiceIntegration;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final CartStatisticService cartStatisticService;
 
     @Value("${utils.cart.prefix}")
     private String cartPrefix;
@@ -36,10 +37,9 @@ public class CartService {
     }
 
     public void addToCart(String cartKey, Long productId) {
-        ProductDto productDto = productsServiceIntegration.findById(productId);
-        execute(cartKey, c -> {
-            c.add(productDto);
-        });
+        ProductDto productDto = coreServiceIntegration.findById(productId);
+        execute(cartKey, c -> c.add(productDto));
+        cartStatisticService.addStatistic(productDto);
     }
 
     public void clearCart(String cartKey) {

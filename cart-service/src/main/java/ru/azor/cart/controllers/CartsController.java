@@ -1,17 +1,22 @@
 package ru.azor.cart.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.carts.CartDto;
 import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.cart.converters.CartConverter;
 import ru.azor.cart.services.CartService;
+import ru.azor.cart.services.CartStatisticService;
+
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("/api/v1/cart")
 @RequiredArgsConstructor
 public class CartsController {
     private final CartService cartService;
+    private final CartStatisticService cartStatisticService;
     private final CartConverter cartConverter;
 
     @GetMapping("/{uuid}")
@@ -62,5 +67,13 @@ public class CartsController {
             return cartService.getCartUuidFromSuffix(username);
         }
         return cartService.getCartUuidFromSuffix(uuid);
+    }
+
+    @GetMapping("/stat/{quantity}")
+    public StringResponseRequestDto getDailyStatistic(@PathVariable Integer quantity) {
+        return StringResponseRequestDto.builder()
+                .list(new CopyOnWriteArrayList<>(cartStatisticService.getRangeStatistic(quantity).keySet()))
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 }

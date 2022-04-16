@@ -22,6 +22,7 @@ public class OrderService {
     private final OrdersRepository ordersRepository;
     private final CartServiceIntegration cartServiceIntegration;
     private final ProductsService productsService;
+    private final OrderStatisticService orderStatisticService;
 
     @Transactional
     public void createOrder(String username, OrderDetailsDto orderDetailsDto) {
@@ -45,6 +46,7 @@ public class OrderService {
         order.setItems(items);
         ordersRepository.save(order);
         cartServiceIntegration.clearUserCart(username);
+        orderStatisticService.addStatistic(items);
     }
 
     public boolean isOrderStatusPresent(OrderStatus orderStatus, Long orderId){

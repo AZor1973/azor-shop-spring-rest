@@ -1,39 +1,32 @@
-package ru.azor.core.integrations;
+package ru.azor.recom.integrations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.azor.api.carts.CartDto;
+import ru.azor.api.core.ProductDto;
+import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.api.exceptions.CartServiceAppError;
 import ru.azor.api.exceptions.CartServiceIntegrationException;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class CartServiceIntegration {
     private final WebClient cartServiceWebClient;
 
-    public void clearUserCart(String username) {
-        cartServiceWebClient.get()
-                .uri("/api/v1/cart/0/clear")
-                .header("username", username)
-                .retrieve()
-                .toBodilessEntity()
-                .block();
-    }
-
-    public CartDto getUserCart(String username) {
+    public StringResponseRequestDto getStatisticFromCartService(Integer quantity) {
         return cartServiceWebClient.get()
-                .uri("/api/v1/cart/0")
-                .header("username", username)
-                // .bodyValue(body) // for POST
+                .uri("/api/v1/cart/stat/" + quantity)
                 .retrieve()
                 .onStatus(
                         HttpStatus::is4xxClientError, // HttpStatus::is4xxClientError
                         clientResponse -> clientResponse.bodyToMono(CartServiceAppError.class).map(
                                 body -> {
-                                    if (body.getCode().equals(CartServiceAppError.CartServiceErrors.CART_NOT_FOUND.name())) {
-                                        return new CartServiceIntegrationException("Выполнен некорректный запрос к сервису корзин: корзина не найдена");
+                                    if (body.getCode().equals(CartServiceAppError.CartServiceErrors.STATISTIC_NOT_FOUND.name())) {
+                                        return new CartServiceIntegrationException("Выполнен некорректный запрос к сервису корзин: статистика не найдена");
                                     }
                                     if (body.getCode().equals(CartServiceAppError.CartServiceErrors.CART_IS_BROKEN.name())) {
                                         return new CartServiceIntegrationException("Выполнен некорректный запрос к сервису корзин: корзина сломана");
@@ -42,7 +35,7 @@ public class CartServiceIntegration {
                                 }
                         )
                 )
-                .bodyToMono(CartDto.class)
+                .bodyToMono(StringResponseRequestDto.class)
                 .block();
     }
 }

@@ -19,6 +19,24 @@ angular.module('market-front').controller('storeController', function ($scope, $
         });
     };
 
+    $scope.loadDailyRecommendations = function () {
+        $http({
+            url: 'http://localhost:5555/recom/api/v1/recom/daily',
+            method: 'GET'
+        }).then(function (response) {
+            $scope.dailyRecomList = response.data;
+        });
+    };
+
+    $scope.loadMonthlyRecommendations = function () {
+        $http({
+            url: 'http://localhost:5555/recom/api/v1/recom/monthly',
+            method: 'GET'
+        }).then(function (response) {
+            $scope.monthlyRecomList = response.data;
+        });
+    };
+
     $scope.generatePagesIndexes = function (startPage, endPage) {
         let arr = [];
         for (let i = startPage; i < endPage + 1; i++) {
@@ -33,5 +51,7 @@ angular.module('market-front').controller('storeController', function ($scope, $
             });
     }
 
+    $scope.loadDailyRecommendations();
+    $scope.loadMonthlyRecommendations();
     $scope.loadProducts();
 });

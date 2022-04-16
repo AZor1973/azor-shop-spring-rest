@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import ru.azor.api.exceptions.CartServiceAppError;
+import ru.azor.api.exceptions.CartServiceIntegrationException;
 import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 
@@ -19,9 +21,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<CoreServiceAppError> catchCartServiceIntegrationException(CartServiceIntegrationException e) {
+    public ResponseEntity<CartServiceAppError> catchCartServiceIntegrationException(CartServiceIntegrationException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_IS_BROKEN.name(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new CartServiceAppError(CartServiceAppError.CartServiceErrors.CART_IS_BROKEN.name(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler

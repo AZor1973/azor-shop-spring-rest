@@ -12,9 +12,11 @@ import ru.azor.api.dto.StringResponseRequestDto;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.OrderConverter;
 import ru.azor.core.services.OrderService;
+import ru.azor.core.services.OrderStatisticService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @RestController
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OrdersController {
     private final OrderService orderService;
+    private final OrderStatisticService orderStatisticService;
     private final OrderConverter orderConverter;
 
     @PostMapping
@@ -52,5 +55,13 @@ public class OrdersController {
     @GetMapping("/{id}")
     public OrderDto getOrderById(@PathVariable Long id) {
         return orderConverter.entityToDto(orderService.findById(id).orElseThrow(() -> new ResourceNotFoundException("ORDER 404")));
+    }
+
+    @GetMapping("/stat/{quantity}")
+    public StringResponseRequestDto getDailyStatistic(@PathVariable Integer quantity) {
+        return StringResponseRequestDto.builder()
+                .list(new CopyOnWriteArrayList<>(orderStatisticService.getRangeStatistic(quantity).keySet()))
+                .httpStatus(HttpStatus.OK)
+                .build();
     }
 }

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,4 +18,5 @@ public class StringResponseRequestDto {
     private String username;
     private String password;
     private HttpStatus httpStatus;
+    private List<?> list;
 }

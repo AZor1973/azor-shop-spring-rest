@@ -1,0 +1,19 @@
+server:
+  port: 8155
+  servlet:
+    context-path: /web-market-recom
+utils:
+  statistic:
+    key: STATISTICAL_KEY
+    quantity: 5
+integrations:
+  cart-service:
+    url: http://localhost:5555/cart
+    connect-timeout: 2000
+    read-timeout: 10000
+    write-timeout: 2000
+  core-service:
+    url: http://localhost:5555/core
+    connect-timeout: 2000
+    read-timeout: 10000
+    write-timeout: 2000

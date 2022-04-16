@@ -1,0 +1,11 @@
+package ru.azor.recom;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SpringWebRecomApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(SpringWebRecomApplication.class, args);
+	}
+}

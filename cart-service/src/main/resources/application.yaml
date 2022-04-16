@@ -5,6 +5,10 @@ server:
 utils:
   cart:
     prefix: SPRING_WEB_APP_
+  statistic:
+    key: CART_STATISTICAL_KEY
+    clear-cron: 0 0 0 * * *
+    add-cron: 0 10 * * * *
 integrations:
   core-service:
     url: http://localhost:5555/core

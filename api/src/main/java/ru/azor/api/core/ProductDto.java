@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -12,7 +13,9 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Модель продукта")
-public class ProductDto {
+public class ProductDto implements Serializable {
+    private static final long serialVersionUID = 6472552774592433071L;
+
     @Schema(description = "ID продукта", required = true, example = "1")
     private Long id;
 

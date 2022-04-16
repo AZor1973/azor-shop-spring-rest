@@ -12,7 +12,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>ru.azor</groupId>
     <artifactId>front-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>front-service</name>
+    <description>Module for Educational Spring Web Rest Project</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -30,6 +34,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.6</version>
         </dependency>
 
         <dependency>

@@ -12,7 +12,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>ru.azor</groupId>
     <artifactId>auth-service</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>auth-service</name>
+    <description>Module for Educational Spring Web Rest Project</description>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
@@ -60,6 +64,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>2.6.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.6</version>
         </dependency>
         <dependency>
             <groupId>ru.azor</groupId>

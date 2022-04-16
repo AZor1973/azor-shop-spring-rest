@@ -2,9 +2,6 @@ server:
   port: 8189
   servlet:
     context-path: /web-market-core
-utils:
-  cart:
-    prefix: SPRING_WEB_APP_
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -17,6 +14,10 @@ spring:
       hibernate:
         ddl-auto: create-drop
         dialect: org.hibernate.dialect.PostgreSQLDialect
+utils:
+  statistic:
+    key: CORE_STATISTICAL_KEY
+    clear-cron: 0 0 0 1 * *
 integrations:
   cart-service:
     url: http://localhost:5555/cart

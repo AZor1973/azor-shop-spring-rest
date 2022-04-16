@@ -2,7 +2,6 @@ angular.module('market-front').controller('cartController', function ($scope, $h
     const contextPath = 'http://localhost:5555/cart/';
 
     $scope.loadCart = function () {
-        console.log("load cart")
         $http({
             url: contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId,
             method: 'GET'
