@@ -8,13 +8,19 @@ import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.CoreServiceIntegrationException;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
 @RequiredArgsConstructor
 public class CoreServiceIntegration {
     private final WebClient coreServiceWebClient;
+    private final ConcurrentHashMap<Long, ProductDto> identityMap = new ConcurrentHashMap<>();
 
     public ProductDto findById(Long id) {
-        return coreServiceWebClient.get()
+        if (identityMap.containsKey(id)) {
+            return identityMap.get(id);
+        }
+        ProductDto productDto = coreServiceWebClient.get()
                 .uri("/api/v1/products/" + id)
                 .header("productId", String.valueOf(id))
                 .retrieve()
@@ -34,5 +40,9 @@ public class CoreServiceIntegration {
                 )
                 .bodyToMono(ProductDto.class)
                 .block();
+        if (productDto != null) {
+            identityMap.put(id, productDto);
+        }
+        return productDto;
     }
 }

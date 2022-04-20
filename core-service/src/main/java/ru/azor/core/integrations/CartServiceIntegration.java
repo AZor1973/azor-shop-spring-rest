@@ -5,13 +5,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.carts.CartDto;
+import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.CartServiceAppError;
 import ru.azor.api.exceptions.CartServiceIntegrationException;
+
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @RequiredArgsConstructor
 public class CartServiceIntegration {
     private final WebClient cartServiceWebClient;
+    private final ConcurrentHashMap<String, CartDto> identityMap = new ConcurrentHashMap<>();
+
 
     public void clearUserCart(String username) {
         cartServiceWebClient.get()
@@ -23,7 +28,10 @@ public class CartServiceIntegration {
     }
 
     public CartDto getUserCart(String username) {
-        return cartServiceWebClient.get()
+        if (identityMap.containsKey(username)) {
+            return identityMap.get(username);
+        }
+        CartDto cartDto = cartServiceWebClient.get()
                 .uri("/api/v1/cart/0")
                 .header("username", username)
                 // .bodyValue(body) // for POST
@@ -44,5 +52,9 @@ public class CartServiceIntegration {
                 )
                 .bodyToMono(CartDto.class)
                 .block();
+        if (cartDto != null){
+            identityMap.put(username, cartDto);
+        }
+        return cartDto;
     }
 }
