@@ -80,6 +80,7 @@ angular.module('market-front').controller('indexController', function ($rootScop
                     $location.path('/');
                 }
             }, function errorCallback(response) {
+                alert("Error: "  + response.data.message);
             });
     };
 

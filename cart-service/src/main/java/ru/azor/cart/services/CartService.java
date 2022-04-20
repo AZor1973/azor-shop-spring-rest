@@ -72,7 +72,7 @@ public class CartService {
         redisTemplate.opsForValue().set(cartKey, cart);
     }
 
-    public void updateCart(String cartKey, Cart cart) {
+    private void updateCart(String cartKey, Cart cart) {
         redisTemplate.opsForValue().set(cartKey, cart);
     }
 }

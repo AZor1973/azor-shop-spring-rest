@@ -73,7 +73,7 @@ public class OrderService {
         try{
             ordersRepository.changeOrderStatus(orderStatus, orderId);
         }catch (ResourceNotFoundException ex){
-            throw new ResourceNotFoundException("Ошибка удаления заказа. Заказ " + orderId + "не существует");
+            throw new ResourceNotFoundException("Ошибка изменения статуса заказа. Заказ " + orderId + "не существует");
         }
     }
 }
