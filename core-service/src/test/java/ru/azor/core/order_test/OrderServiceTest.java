@@ -1,4 +1,4 @@
-package order_test;
+package ru.azor.core.order_test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
