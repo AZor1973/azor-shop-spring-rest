@@ -1,3 +1,5 @@
+package cart_test;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,19 +23,15 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 @SpringBootTest(classes = {CartService.class})
-public class CartTest {
+public class CartServiceTest {
     @Autowired
     private CartService cartService;
-
     @MockBean
     private CoreServiceIntegration coreServiceIntegration;
-
     @MockBean
     private RedisTemplate<String, Object> redisTemplate;
-
     @MockBean
     private CartStatisticService cartStatisticService;
-
     @MockBean
     private ValueOperations<String, Object> valueOperations;
 

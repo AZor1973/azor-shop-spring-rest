@@ -25,7 +25,7 @@ public class OrderService {
     private final OrderStatisticService orderStatisticService;
 
     @Transactional
-    public void createOrder(String username, OrderDetailsDto orderDetailsDto) {
+    public Order createOrder(String username, OrderDetailsDto orderDetailsDto) {
         CartDto currentCart = cartServiceIntegration.getUserCart(username);
         Order order = new Order();
         order.setAddress(orderDetailsDto.getAddress());
@@ -40,16 +40,18 @@ public class OrderService {
                     item.setQuantity(o.getQuantity());
                     item.setPricePerProduct(o.getPricePerProduct());
                     item.setPrice(o.getPrice());
-                    item.setProduct(productsService.findById(o.getProductId()).orElseThrow(() -> new ResourceNotFoundException("Product not found")));
+                    item.setProduct(productsService.findById(o.getProductId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Product not found")));
                     return item;
                 }).collect(Collectors.toList());
         order.setItems(items);
         ordersRepository.save(order);
         cartServiceIntegration.clearUserCart(username);
         orderStatisticService.addStatistic(items);
+        return order;
     }
 
-    public boolean isOrderStatusPresent(OrderStatus orderStatus, Long orderId){
+    public boolean isOrderStatusPresent(OrderStatus orderStatus, Long orderId) {
         return ordersRepository.isOrderStatusPresent(orderStatus, orderId) > 0;
     }
 
@@ -62,17 +64,17 @@ public class OrderService {
     }
 
     public void deleteOrder(Long orderId) {
-        try{
+        try {
             ordersRepository.deleteById(orderId);
-        }catch (ResourceNotFoundException ex){
-           throw new ResourceNotFoundException("Ошибка удаления заказа. Заказ " + orderId + "не существует");
+        } catch (ResourceNotFoundException ex) {
+            throw new ResourceNotFoundException("Ошибка удаления заказа. Заказ " + orderId + "не существует");
         }
     }
 
     public void changeOrderStatus(OrderStatus orderStatus, Long orderId) {
-        try{
+        try {
             ordersRepository.changeOrderStatus(orderStatus, orderId);
-        }catch (ResourceNotFoundException ex){
+        } catch (ResourceNotFoundException ex) {
             throw new ResourceNotFoundException("Ошибка изменения статуса заказа. Заказ " + orderId + "не существует");
         }
     }
