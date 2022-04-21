@@ -11,10 +11,8 @@ import ru.azor.api.carts.CartDto;
 import ru.azor.api.carts.CartItemDto;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.enums.OrderStatus;
-import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.entities.Category;
 import ru.azor.core.entities.Order;
-import ru.azor.core.entities.OrderItem;
 import ru.azor.core.entities.Product;
 import ru.azor.core.integrations.CartServiceIntegration;
 import ru.azor.core.repositories.OrdersRepository;
@@ -23,7 +21,6 @@ import ru.azor.core.services.OrderStatisticService;
 import ru.azor.core.services.ProductsService;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
