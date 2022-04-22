@@ -1,4 +1,4 @@
-package cart_test;
+package ru.azor.cart.cart_test;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,7 +22,7 @@ import ru.azor.cart.services.CartStatisticService;
 import java.math.BigDecimal;
 import java.util.Set;
 
-@SpringBootTest(classes = {CartService.class})
+@SpringBootTest(classes = CartService.class)
 public class CartServiceTest {
     @Autowired
     private CartService cartService;
