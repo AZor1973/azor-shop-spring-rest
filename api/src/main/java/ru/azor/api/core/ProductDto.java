@@ -22,8 +22,9 @@ public class ProductDto implements Serializable {
     @Schema(description = "Название продукта", required = true, maxLength = 255, minLength = 3, example = "Коробка конфет")
     private String title;
 
-    @Schema(description = "Цена продукта", required = true, example = "120")
+    @Schema(description = "Цена продукта", required = true, example = "120.00")
     private BigDecimal price;
 
+    @Schema(description = "Категории продукта", required = true, example = "{Молочные продукты, Скоропортящиеся товары}")
     private Set<CategoryDto> categories;
 }

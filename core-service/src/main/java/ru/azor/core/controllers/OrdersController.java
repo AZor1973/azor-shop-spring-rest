@@ -1,5 +1,6 @@
 package ru.azor.core.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.core.OrderDto;
-import ru.azor.api.dto.StringResponseRequestDto;
+import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.OrderConverter;
 import ru.azor.core.services.OrderService;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
+@Tag(name = "Заказы", description = "Методы работы с заказами")
 public class OrdersController {
     private final OrderService orderService;
     private final OrderStatisticService orderStatisticService;

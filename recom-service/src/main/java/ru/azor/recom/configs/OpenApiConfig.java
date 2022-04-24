@@ -1,4 +1,4 @@
-package ru.azor.core.configs;
+package ru.azor.recom.configs;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -12,7 +12,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(
                         new Info()
-                                .title("AZor - Web-Market-Core - Продуктовый сервис")
+                                .title("AZor - Web-Market-Recom - Сервис рекомендаций")
                                 .version("1")
                 );
     }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import ru.azor.api.auth.UserDto;
-import ru.azor.api.dto.StringResponseRequestDto;
+import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;

@@ -6,6 +6,7 @@ import com.paypal.orders.Order;
 import com.paypal.orders.OrderRequest;
 import com.paypal.orders.OrdersCaptureRequest;
 import com.paypal.orders.OrdersCreateRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.azor.api.dto.StringResponseRequestDto;
+import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.enums.OrderStatus;
 import ru.azor.core.services.OrderService;
 import ru.azor.core.services.PayPalService;
@@ -22,6 +23,7 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/api/v1/paypal")
 @RequiredArgsConstructor
+@Tag(name = "PayPal", description = "Методы работы с PayPal")
 public class PayPalController {
     private final PayPalHttpClient payPalClient;
     private final OrderService orderService;

@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.azor.api.core.ProductDto;
-import ru.azor.api.dto.StringResponseRequestDto;
-import ru.azor.api.exceptions.CartServiceAppError;
-import ru.azor.api.exceptions.CartServiceIntegrationException;
+import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.CoreServiceIntegrationException;
 

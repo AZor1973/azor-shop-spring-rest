@@ -1,5 +1,6 @@
 package ru.azor.auth.controllers;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +12,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.azor.api.dto.StringResponseRequestDto;
-import ru.azor.api.exceptions.AppError;
+import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.auth.UserDto;
+import ru.azor.api.exceptions.AuthServiceAppError;
 import ru.azor.auth.services.UserService;
 import ru.azor.auth.utils.JwtTokenUtil;
 
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Аутентификация", description = "Методы работы с аутентификацией и регистрацией пользователей")
 public class AuthController {
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
@@ -34,7 +36,7 @@ public class AuthController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
-            return new ResponseEntity<>(new AppError("AUTH_SERVICE_INCORRECT_USERNAME_OR_PASSWORD", "Incorrect username or password"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_INCORRECT_USERNAME_OR_PASSWORD, "Incorrect username or password"), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);

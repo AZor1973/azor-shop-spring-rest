@@ -16,12 +16,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<CartServiceAppError> catchResourceNotFoundException(ResourceNotFoundException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new CartServiceAppError(CartServiceAppError.CartServiceErrors.CART_NOT_FOUND.name(), e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new CartServiceAppError(CartServiceAppError.CartServiceErrors.CART_NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     public ResponseEntity<CoreServiceAppError> catchCoreServiceIntegrationException(CoreServiceIntegrationException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_IS_BROKEN.name(), e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_IS_BROKEN, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

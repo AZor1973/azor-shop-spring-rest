@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.ProductDto;
+import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.ProductConverter;
 import ru.azor.core.entities.Category;
@@ -58,6 +59,10 @@ public class ProductsController {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
                             content = @Content(schema = @Schema(implementation = ProductDto.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = CoreServiceAppError.class))
                     )
             }
     )
