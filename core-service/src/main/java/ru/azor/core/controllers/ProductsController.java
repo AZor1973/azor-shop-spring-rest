@@ -8,12 +8,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.ProductConverter;
-import ru.azor.core.entities.Category;
 import ru.azor.core.entities.Product;
 import ru.azor.core.services.ProductsService;
 import ru.azor.core.validators.ProductValidator;
@@ -74,7 +74,17 @@ public class ProductsController {
     }
 
     @PostMapping
-    public ProductDto saveNewProduct(@RequestBody ProductDto productDto) {
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(
+            summary = "Создание нового продукта",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "201",
+                            content = @Content(schema = @Schema(implementation = ProductDto.class))
+                    )
+            }
+    )
+    public ProductDto saveNewProduct(@RequestBody @Parameter(description = "Новый продукт", required = true) ProductDto productDto) {
         productValidator.validate(productDto);
         Product product = productConverter.productDtoToProduct(productDto);
         product = productsService.save(product);
@@ -82,14 +92,37 @@ public class ProductsController {
     }
 
     @PutMapping
-    public ProductDto updateProduct(@RequestBody ProductDto productDto) {
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Изменение продукта",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200",
+                            content = @Content(schema = @Schema(implementation = ProductDto.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "404",
+                            content = @Content(schema = @Schema(implementation = CoreServiceAppError.class))
+                    )
+            }
+    )
+    public ProductDto updateProduct(@RequestBody @Parameter(description = "Изменённый продукт", required = true) ProductDto productDto) {
         productValidator.validate(productDto);
         Product product = productsService.update(productDto);
         return productConverter.productToProductDto(product);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(
+            summary = "Изменение продукта",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200"
+                    )
+            }
+    )
+    public void deleteById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
         productsService.deleteById(id);
     }
 }
