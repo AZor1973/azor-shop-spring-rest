@@ -18,6 +18,8 @@ utils:
   statistic:
     key: CORE_STATISTICAL_KEY
     clear-cron: 0 0 0 1 * *
+  identity-map:
+    clear-cron: 0 0 0 * * *
 integrations:
   cart-service:
     url: http://localhost:5555/cart

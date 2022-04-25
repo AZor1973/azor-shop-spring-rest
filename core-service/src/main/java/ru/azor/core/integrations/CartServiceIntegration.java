@@ -2,6 +2,8 @@ package ru.azor.core.integrations;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.carts.CartDto;
@@ -56,5 +58,11 @@ public class CartServiceIntegration {
             identityMap.put(username, cartDto);
         }
         return cartDto;
+    }
+
+    @Scheduled(cron = "${utils.identity-map.clear-cron}")
+    @Async
+    public void clearIdentityMap() {
+      identityMap.clear();
     }
 }

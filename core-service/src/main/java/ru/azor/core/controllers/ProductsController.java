@@ -52,7 +52,6 @@ public class ProductsController {
         );
     }
 
-    @GetMapping("/{id}")
     @Operation(
             summary = "Запрос на получение продукта по id",
             responses = {
@@ -66,6 +65,7 @@ public class ProductsController {
                     )
             }
     )
+    @GetMapping("/{id}")
     public ProductDto getProductById(
             @PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id
     ) {
@@ -73,8 +73,6 @@ public class ProductsController {
         return productConverter.productToProductDto(product);
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     @Operation(
             summary = "Создание нового продукта",
             responses = {
@@ -84,6 +82,8 @@ public class ProductsController {
                     )
             }
     )
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ProductDto saveNewProduct(@RequestBody @Parameter(description = "Новый продукт", required = true) ProductDto productDto) {
         productValidator.validate(productDto);
         Product product = productConverter.productDtoToProduct(productDto);
@@ -91,8 +91,6 @@ public class ProductsController {
         return productConverter.productToProductDto(product);
     }
 
-    @PutMapping
-    @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Изменение продукта",
             responses = {
@@ -106,14 +104,14 @@ public class ProductsController {
                     )
             }
     )
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
     public ProductDto updateProduct(@RequestBody @Parameter(description = "Изменённый продукт", required = true) ProductDto productDto) {
         productValidator.validate(productDto);
         Product product = productsService.update(productDto);
         return productConverter.productToProductDto(product);
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
     @Operation(
             summary = "Изменение продукта",
             responses = {
@@ -122,6 +120,8 @@ public class ProductsController {
                     )
             }
     )
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
         productsService.deleteById(id);
     }

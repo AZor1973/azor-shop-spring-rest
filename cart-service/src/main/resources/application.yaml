@@ -9,6 +9,8 @@ utils:
     key: CART_STATISTICAL_KEY
     clear-cron: 0 0 0 * * *
     add-cron: 0 10 * * * *
+  identity-map:
+    clear-cron: 0 0 0 * * *
 integrations:
   core-service:
     url: http://localhost:5555/core
