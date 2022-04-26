@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,7 @@ import ru.azor.core.services.OrderService;
 import ru.azor.core.services.PayPalService;
 import java.io.IOException;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/paypal")
 @RequiredArgsConstructor
@@ -51,8 +53,9 @@ public class PayPalController {
     @PostMapping("/create/{orderId}")
     public ResponseEntity<?> createOrder(@PathVariable @Parameter(description = "Идентификатор заказа", required = true) Long orderId) throws IOException {
         if (orderService.isOrderStatusPresent(OrderStatus.PAID, orderId)) {
+            log.error("Оплата невозможна. Заказ уже оплачен");
             return new ResponseEntity<>(StringResponseRequestDto.builder()
-                    .value("Заказ уже оплачен")
+                    .value("Оплата невозможна. Заказ уже оплачен")
                     .build(), HttpStatus.CONFLICT);
         }
         OrdersCreateRequest request = new OrdersCreateRequest();
@@ -81,6 +84,7 @@ public class PayPalController {
         if ("COMPLETED".equals(payPalOrder.status())) {
             long orderId = Long.parseLong(payPalOrder.purchaseUnits().get(0).referenceId());
             orderService.changeOrderStatus(OrderStatus.PAID, orderId);
+            log.info("Order completed!");
             return new ResponseEntity<>("Order completed!", HttpStatus.valueOf(response.statusCode()));
         }
         return new ResponseEntity<>(payPalOrder, HttpStatus.valueOf(response.statusCode()));

@@ -1,6 +1,7 @@
 package ru.azor.auth.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -58,17 +60,22 @@ public class UserService implements UserDetailsService {
         if (bindingResult.hasErrors()) {
             response = String.join(" ,", errors);
             httpStatus = HttpStatus.BAD_REQUEST;
+            log.error("Ошибка ввода данных при регистрации");
         } else if (isUsernamePresent(userDto.getUsername())) {
             response = "Пользователь с таким именем уже существует";
             httpStatus = HttpStatus.CONFLICT;
+            log.error("Пользователь с таким именем уже существует");
         } else if (isEmailPresent(userDto.getEmail())) {
             response = "Пользователь с таким адресом электронной почты уже существует";
             httpStatus = HttpStatus.CONFLICT;
+            log.error("Пользователь с таким адресом электронной почты уже существует");
         } else {
             save(userConverter.dtoToEntity(userDto));
             code = mailService.sendMail(userDto.getEmail());
+            log.info("Код подтверждения выслан на почту " + userDto.getEmail());
             response = "Новый пользователь создан";
             httpStatus = HttpStatus.CREATED;
+            log.info("Новый пользователь создан");
         }
         return StringResponseRequestDto.builder().value(response)
                 .password(String.valueOf(code))
@@ -87,5 +94,6 @@ public class UserService implements UserDetailsService {
     public void activateUser(String username) {
         userRepository.updateUserStatus(User.AccountStatus.ACTIVE, username);
         userRepository.updateUserEnabled(true, username);
+        log.info("Новый пользователь активирован");
     }
 }

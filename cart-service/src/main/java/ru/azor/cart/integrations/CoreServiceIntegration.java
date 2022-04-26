@@ -1,6 +1,7 @@
 package ru.azor.cart.integrations;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,6 +13,7 @@ import ru.azor.api.exceptions.CoreServiceIntegrationException;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CoreServiceIntegration {
@@ -31,11 +33,14 @@ public class CoreServiceIntegration {
                         clientResponse -> clientResponse.bodyToMono(CoreServiceAppError.class).map(
                                 body -> {
                                     if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.PRODUCT_NOT_FOUND)) {
+                                        log.error("Выполнен некорректный запрос к сервису продуктов: продукт не найден");
                                         return new CoreServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: продукт не найден");
                                     }
                                     if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_IS_BROKEN)) {
+                                        log.error("Выполнен некорректный запрос к сервису продуктов: сервис сломан");
                                         return new CoreServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: сервис сломан");
                                     }
+                                    log.error("Выполнен некорректный запрос к сервису продуктов: причина неизвестна");
                                     return new CoreServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: причина неизвестна");
                                 }
                         )

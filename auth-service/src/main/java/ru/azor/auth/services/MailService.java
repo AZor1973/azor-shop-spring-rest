@@ -21,6 +21,7 @@ public class MailService {
         simpleMailMessage.setSubject("Подтверждение регистрации");
         simpleMailMessage.setText("Код для подтверждения регистрации: " + code);
         javaMailSender.send(simpleMailMessage);
+
         return code;
     }
 }

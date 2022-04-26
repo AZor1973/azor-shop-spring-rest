@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
@@ -57,11 +59,13 @@ public class OrdersController {
         if (bindingResult.hasErrors()) {
             response = String.join(" ,", errors);
             httpStatus = HttpStatus.BAD_REQUEST;
+            log.error("Ошибка ввода данных деталей заказа");
             return new ResponseEntity<>(StringResponseRequestDto.builder()
                     .value(response).build(), httpStatus);
         }
         orderService.createOrder(username, orderDetailsDto);
         httpStatus = HttpStatus.CREATED;
+        log.info("Order created");
         return new ResponseEntity<>(StringResponseRequestDto.builder()
                 .value("Order created").build(), httpStatus);
     }

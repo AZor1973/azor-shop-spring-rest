@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,6 +29,7 @@ import javax.validation.Valid;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @Tag(name = "Аутентификация", description = "Методы работы с аутентификацией и регистрацией пользователей")
@@ -55,11 +57,13 @@ public class AuthController {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException e) {
+            log.error("Incorrect username or password");
             return new ResponseEntity<>(new AuthServiceAppError(AuthServiceAppError.AuthServiceErrors.AUTH_SERVICE_INCORRECT_USERNAME_OR_PASSWORD, "Incorrect username or password"), HttpStatus.UNAUTHORIZED);
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);
         codes.remove(authRequest.getUsername());
+        log.info(authRequest.getUsername() + " logged in");
         return ResponseEntity.ok(StringResponseRequestDto.builder().token(token).build());
     }
 
@@ -116,6 +120,7 @@ public class AuthController {
                     .token(token)
                     .build(), HttpStatus.OK);
         }
+        log.error("Неправильный код");
         return new ResponseEntity<>(StringResponseRequestDto.builder().value("Неправильный код")
                 .build(), HttpStatus.CONFLICT);
     }

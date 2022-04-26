@@ -8,6 +8,8 @@ import ru.azor.core.entities.OrderItem;
 public class OrderItemConverter {
 
     public OrderItemDto entityToDto(OrderItem orderItem) {
-        return new OrderItemDto(orderItem.getProduct().getId(), orderItem.getProduct().getTitle(), orderItem.getQuantity(), orderItem.getPricePerProduct(), orderItem.getPrice());
+        return new OrderItemDto(orderItem.getProduct().getId(),
+                orderItem.getProduct().getTitle(), orderItem.getQuantity(),
+                orderItem.getPricePerProduct(), orderItem.getPrice());
     }
 }
