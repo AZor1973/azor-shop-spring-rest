@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,7 +66,9 @@ public class AuthController {
         String token = jwtTokenUtil.generateToken(userDetails);
         codes.remove(authRequest.getUsername());
         log.info(authRequest.getUsername() + " logged in");
-        return ResponseEntity.ok(StringResponseRequestDto.builder().token(token).build());
+        return ResponseEntity.ok(StringResponseRequestDto.builder().token(token)
+                .list(jwtTokenUtil.getRoles(token))
+                .build());
     }
 
     @Operation(
@@ -88,7 +92,7 @@ public class AuthController {
     public ResponseEntity<?> registration(@RequestBody @Valid @Parameter(description = "Регистрирующийся пользователь", required = true) UserDto userDto,
                                           @Parameter(description = "Вводимые данные", required = true) BindingResult bindingResult) {
         StringResponseRequestDto response = userService.presave(userDto, bindingResult);
-        if (response.getHttpStatus() == HttpStatus.CREATED){
+        if (response.getHttpStatus() == HttpStatus.CREATED) {
             codes.put(userDto.getUsername(), Integer.parseInt(response.getPassword()));
         }
         return new ResponseEntity<>(response, response.getHttpStatus());

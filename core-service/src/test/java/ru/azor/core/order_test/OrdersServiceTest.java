@@ -16,7 +16,7 @@ import ru.azor.core.entities.Order;
 import ru.azor.core.entities.Product;
 import ru.azor.core.integrations.CartServiceIntegration;
 import ru.azor.core.repositories.OrdersRepository;
-import ru.azor.core.services.OrderService;
+import ru.azor.core.services.OrdersService;
 import ru.azor.core.services.OrderStatisticService;
 import ru.azor.core.services.ProductsService;
 
@@ -26,10 +26,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@SpringBootTest(classes = {OrderService.class})
-public class OrderServiceTest {
+@SpringBootTest(classes = {OrdersService.class})
+public class OrdersServiceTest {
     @Autowired
-    private OrderService orderService;
+    private OrdersService ordersService;
     @MockBean
     private OrdersRepository ordersRepository;
     @MockBean
@@ -73,7 +73,7 @@ public class OrderServiceTest {
         Mockito.doReturn(cartDto).when(cartServiceIntegration).getUserCart(USERNAME);
         Mockito.doReturn(Optional.of(product)).when(productsService).findById(cartItemDto.getProductId());
         Mockito.doNothing().when(orderStatisticService).addStatistic(new CopyOnWriteArrayList<>());
-        Order order = orderService.createOrder(USERNAME, orderDetailsDto);
+        Order order = ordersService.createOrder(USERNAME, orderDetailsDto);
         Assertions.assertEquals(order.getOrderStatus(), OrderStatus.CREATED);
         Assertions.assertEquals(order.getTotalPrice(), cartDto.getTotalPrice());
         Assertions.assertEquals(order.getItems().size(), cartDto.getItems().size());

@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PayPalService {
-    private final OrderService orderService;
+    private final OrdersService ordersService;
 
     @Transactional
     public OrderRequest createOrderRequest(Long orderId) {
-        ru.azor.core.entities.Order order = orderService.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Заказ не найден"));
+        ru.azor.core.entities.Order order = ordersService.findById(orderId).orElseThrow(() -> new ResourceNotFoundException("Заказ не найден"));
 
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.checkoutPaymentIntent("CAPTURE");

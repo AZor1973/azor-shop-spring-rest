@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class OrdersService {
     private final OrdersRepository ordersRepository;
     private final CartServiceIntegration cartServiceIntegration;
     private final ProductsService productsService;

@@ -23,7 +23,7 @@ public class ProductConverter {
         return categoryDtos.stream().map(this::categoryDtoToCategory).collect(Collectors.toSet());
     }
 
-    private Set<CategoryDto> setCategoryToSetCategoryDto(Set<Category> categories){
+    public Set<CategoryDto> setCategoryToSetCategoryDto(Set<Category> categories){
         return categories.stream().map(this::categoryToCategoryDto).collect(Collectors.toSet());
     }
 
@@ -31,7 +31,7 @@ public class ProductConverter {
         return new Category(categoryDto.getId(), categoryDto.getTitle());
     }
 
-    private CategoryDto categoryToCategoryDto(Category category) {
+    public CategoryDto categoryToCategoryDto(Category category) {
         return new CategoryDto(category.getId(), category.getTitle());
     }
 }

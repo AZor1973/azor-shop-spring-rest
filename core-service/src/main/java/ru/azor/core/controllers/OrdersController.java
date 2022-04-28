@@ -18,7 +18,7 @@ import ru.azor.api.core.OrderDto;
 import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.OrderConverter;
-import ru.azor.core.services.OrderService;
+import ru.azor.core.services.OrdersService;
 import ru.azor.core.services.OrderStatisticService;
 
 import javax.validation.Valid;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Tag(name = "Заказы", description = "Методы работы с заказами")
 public class OrdersController {
-    private final OrderService orderService;
+    private final OrdersService ordersService;
     private final OrderStatisticService orderStatisticService;
     private final OrderConverter orderConverter;
 
@@ -63,7 +63,7 @@ public class OrdersController {
             return new ResponseEntity<>(StringResponseRequestDto.builder()
                     .value(response).build(), httpStatus);
         }
-        orderService.createOrder(username, orderDetailsDto);
+        ordersService.createOrder(username, orderDetailsDto);
         httpStatus = HttpStatus.CREATED;
         log.info("Order created");
         return new ResponseEntity<>(StringResponseRequestDto.builder()
@@ -82,7 +82,7 @@ public class OrdersController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<OrderDto> getCurrentUserOrders(@RequestHeader @Parameter(description = "Имя пользователя", required = true) String username) {
-        return orderService.findOrdersByUsername(username).stream()
+        return ordersService.findOrdersByUsername(username).stream()
                 .map(orderConverter::entityToDto).collect(Collectors.toList());
     }
 
@@ -98,7 +98,7 @@ public class OrdersController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public OrderDto getOrderById(@PathVariable @Parameter(description = "Идентификатор заказа", required = true) Long id) {
-        return orderConverter.entityToDto(orderService.findById(id).orElseThrow(() -> new ResourceNotFoundException("ORDER 404")));
+        return orderConverter.entityToDto(ordersService.findById(id).orElseThrow(() -> new ResourceNotFoundException("ORDER 404")));
     }
 
     @Operation(

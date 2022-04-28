@@ -16,14 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.enums.OrderStatus;
-import ru.azor.core.services.OrderService;
+import ru.azor.core.services.OrdersService;
 import ru.azor.core.services.PayPalService;
 import java.io.IOException;
 
@@ -34,7 +33,7 @@ import java.io.IOException;
 @Tag(name = "PayPal", description = "Методы работы с PayPal")
 public class PayPalController {
     private final PayPalHttpClient payPalClient;
-    private final OrderService orderService;
+    private final OrdersService ordersService;
     private final PayPalService payPalService;
 
     @Operation(
@@ -52,7 +51,7 @@ public class PayPalController {
     )
     @PostMapping("/create/{orderId}")
     public ResponseEntity<?> createOrder(@PathVariable @Parameter(description = "Идентификатор заказа", required = true) Long orderId) throws IOException {
-        if (orderService.isOrderStatusPresent(OrderStatus.PAID, orderId)) {
+        if (ordersService.isOrderStatusPresent(OrderStatus.PAID, orderId)) {
             log.error("Оплата невозможна. Заказ уже оплачен");
             return new ResponseEntity<>(StringResponseRequestDto.builder()
                     .value("Оплата невозможна. Заказ уже оплачен")
@@ -83,7 +82,7 @@ public class PayPalController {
         Order payPalOrder = response.result();
         if ("COMPLETED".equals(payPalOrder.status())) {
             long orderId = Long.parseLong(payPalOrder.purchaseUnits().get(0).referenceId());
-            orderService.changeOrderStatus(OrderStatus.PAID, orderId);
+            ordersService.changeOrderStatus(OrderStatus.PAID, orderId);
             log.info("Order completed!");
             return new ResponseEntity<>("Order completed!", HttpStatus.valueOf(response.statusCode()));
         }

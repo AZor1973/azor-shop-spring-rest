@@ -9,14 +9,22 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.core.converters.ProductConverter;
 import ru.azor.core.entities.Product;
+import ru.azor.core.services.CategoriesService;
 import ru.azor.core.services.ProductsService;
-import ru.azor.core.validators.ProductValidator;
+
+import javax.validation.Valid;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -24,8 +32,8 @@ import ru.azor.core.validators.ProductValidator;
 @Tag(name = "Продукты", description = "Методы работы с продуктами")
 public class ProductsController {
     private final ProductsService productsService;
+    private final CategoriesService categoriesService;
     private final ProductConverter productConverter;
-    private final ProductValidator productValidator;
 
     @Operation(
             summary = "Запрос на получение страницы продуктов",
@@ -84,11 +92,14 @@ public class ProductsController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDto saveNewProduct(@RequestBody @Parameter(description = "Новый продукт", required = true) ProductDto productDto) {
-        productValidator.validate(productDto);
-        Product product = productConverter.productDtoToProduct(productDto);
-        product = productsService.save(product);
-        return productConverter.productToProductDto(product);
+    public ResponseEntity<?> saveNewProduct(@RequestHeader @Parameter(description = "Категории  продукта", required = true) String categories,
+                                            @RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
+                                            BindingResult bindingResult) {
+        productDto.setCategories(Set.copyOf(Arrays.asList(categories.split(",")))
+                .stream().map(categoriesService::findCategoryByTitle)
+                .collect(Collectors.toSet()));
+        StringResponseRequestDto response = productsService.tryToSaveNewProduct(productDto, bindingResult);
+        return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
     @Operation(
@@ -106,8 +117,7 @@ public class ProductsController {
     )
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public ProductDto updateProduct(@RequestBody @Parameter(description = "Изменённый продукт", required = true) ProductDto productDto) {
-        productValidator.validate(productDto);
+    public ProductDto updateProduct(@RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto) {
         Product product = productsService.update(productDto);
         return productConverter.productToProductDto(product);
     }

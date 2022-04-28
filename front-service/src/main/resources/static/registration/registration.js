@@ -1,6 +1,8 @@
 angular.module('market-front').controller('registrationController', function ($scope, $http, $location, $localStorage) {
     const contextPath = 'http://localhost:5555/auth/';
+
     $scope.isRegister = false;
+
     $scope.registerUser = function () {
         $http.post(contextPath + 'registration', $scope.userDto)
             .then(function (response) {

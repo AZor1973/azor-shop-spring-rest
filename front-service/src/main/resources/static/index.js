@@ -30,6 +30,10 @@
                 templateUrl: 'registration/registration.html',
                 controller: 'registrationController'
             })
+            .when('/admin', {
+                templateUrl: 'admin/admin.html',
+                controller: 'adminController'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -63,12 +67,15 @@
 })();
 
 angular.module('market-front').controller('indexController', function ($rootScope, $scope, $http, $location, $localStorage) {
-    $scope.tryToAuth = function () {
+
+    $rootScope.listRoles = new Set();
+
+        $scope.tryToAuth = function () {
         $http.post('http://localhost:5555/auth/auth', $scope.user)
             .then(function successCallback(response) {
                 if (response.data.token) {
                     $http.defaults.headers.common.Authorization = 'Bearer ' + response.data.token;
-                    $localStorage.springWebUser = {username: $scope.user.username, token: response.data.token};
+                    $localStorage.springWebUser = {username: $scope.user.username, token: response.data.token, listRoles: response.data.list};
 
                     $scope.user.username = null;
                     $scope.user.password = null;
@@ -80,11 +87,12 @@ angular.module('market-front').controller('indexController', function ($rootScop
                     $location.path('/');
                 }
             }, function errorCallback(response) {
-                alert("Error: "  + response.data.message);
+                alert("Error: " + response.data.message);
             });
     };
 
     $rootScope.tryToLogout = function () {
+        $scope.listRoles.clear();
         $scope.clearUser();
         $scope.user = null;
         $location.path('/');
@@ -97,5 +105,13 @@ angular.module('market-front').controller('indexController', function ($rootScop
 
     $rootScope.isUserLoggedIn = function () {
         return !!$localStorage.springWebUser;
+    };
+
+    $rootScope.isUserHasAdminRole = function () {
+        if (!$rootScope.isUserLoggedIn()){
+            return false;
+        }
+        $localStorage.springWebUser.listRoles.forEach($scope.listRoles.add, $scope.listRoles)
+        return $rootScope.listRoles.has('ROLE_ADMIN');
     };
 });

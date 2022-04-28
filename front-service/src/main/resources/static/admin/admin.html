@@ -1,0 +1,37 @@
+<div>
+    <p></p>
+    <h3>Администрирование</h3>
+    <p></p>
+
+    <div class="row g-2">
+        <div class="col-6 col-md-2">
+            <!--         Сбоку-->
+            Что-то сбоку
+        </div>
+        <div class="col-sm-6 col-md-10">
+            <!--       По центру-->
+            <button class="btn btn-primary" ng-click="showProductForm()">Создать новый продукт</button>
+
+            <form ng-show="isProductFormAccessible">
+                <label>Название продукта
+                    <input class="form-control" type="text" placeholder="Название продукта" ng-model="productDto.title" ng-click="cleanResponse()">
+                </label>
+                <label>Цена
+                    <input class="form-control" type="text" placeholder="Цена" ng-model="productDto.price" ng-click="cleanResponse()">
+                </label>
+                <label>Категории
+                    <div ng-repeat="c in categoriesSet">
+                        <label><input type="checkbox" ng-click="addCategory(c.title)"></label>
+                        {{c.title}}
+                    </div>
+                </label>
+                <p></p>
+                <span id="response"></span>
+                <span id="message"></span>
+                <p></p>
+                <button class="btn btn-primary" ng-click="createProductDto()">Создать продукт</button>
+            </form>
+
+        </div>
+    </div>
+</div>
