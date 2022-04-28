@@ -94,4 +94,24 @@ public class ProductsService {
     private Boolean isTitleOfProductPresent(String title) {
         return productsRepository.isTitleOfProductPresent(title) > 0;
     }
+
+    public StringResponseRequestDto tryToUpdateProduct(ProductDto productDto, BindingResult bindingResult) {
+        String response;
+        HttpStatus httpStatus;
+        List<String> errors = bindingResult.getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+        if (bindingResult.hasErrors()) {
+            response = String.join(" ,", errors);
+            httpStatus = HttpStatus.BAD_REQUEST;
+            log.error("Ошибка ввода данных при изменении продукта");
+            log.error(response);
+        } else {
+            update(productDto);
+            response = "Продукт изменён";
+            httpStatus = HttpStatus.CREATED;
+            log.info("Продукт изменён");
+        }
+        return StringResponseRequestDto.builder().value(response)
+                .httpStatus(httpStatus).build();
+    }
 }

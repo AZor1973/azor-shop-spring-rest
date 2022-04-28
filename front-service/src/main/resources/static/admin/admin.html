@@ -6,7 +6,6 @@
     <div class="row g-2">
         <div class="col-6 col-md-2">
             <!--         Сбоку-->
-            Что-то сбоку
         </div>
         <div class="col-sm-6 col-md-10">
             <!--       По центру-->
@@ -14,10 +13,12 @@
 
             <form ng-show="isProductFormAccessible">
                 <label>Название продукта
-                    <input class="form-control" type="text" placeholder="Название продукта" ng-model="productDto.title" ng-click="cleanResponse()">
+                    <input class="form-control" type="text" placeholder="Название продукта" ng-model="productDto.title"
+                           ng-click="cleanResponse()">
                 </label>
                 <label>Цена
-                    <input class="form-control" type="text" placeholder="Цена" ng-model="productDto.price" ng-click="cleanResponse()">
+                    <input class="form-control" type="text" placeholder="Цена" ng-model="productDto.price"
+                           ng-click="cleanResponse()">
                 </label>
                 <label>Категории
                     <div ng-repeat="c in categoriesSet">
@@ -31,6 +32,12 @@
                 <p></p>
                 <button class="btn btn-primary" ng-click="createProductDto()">Создать продукт</button>
             </form>
+
+            <button class="btn btn-primary" ng-click="">Редактировать продукт</button>
+            <button class="btn btn-primary" ng-click="">Создать категорию</button>
+            <button class="btn btn-primary" ng-click="">Добавить картинку к продукту</button>
+            <button class="btn btn-primary" ng-click="">Редактировать пользователей</button>
+
 
         </div>
     </div>

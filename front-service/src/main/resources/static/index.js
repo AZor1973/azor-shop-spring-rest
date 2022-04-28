@@ -34,6 +34,10 @@
                 templateUrl: 'admin/admin.html',
                 controller: 'adminController'
             })
+            .when('/product_form/\\w+', {
+                templateUrl: 'product/product_form.html',
+                controller: 'productFormController'
+            })
             .otherwise({
                 redirectTo: '/'
             });

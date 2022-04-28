@@ -67,6 +67,9 @@
                     <td>
                         <button class="btn btn-primary" ng-click="addToCart(p.id)">Добавить в корзину</button>
                     </td>
+                    <td>
+                        <button class="btn btn-primary" ng-click="goToProductForm(p.id)" ng-show="isUserHasAdminRole()">Редактировать</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>

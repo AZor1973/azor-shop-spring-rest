@@ -51,6 +51,10 @@ angular.module('market-front').controller('storeController', function ($scope, $
             });
     }
 
+    $scope.goToProductForm = function (productId) {
+        $location.path('/product_form/' + productId);
+    }
+
     $scope.loadDailyRecommendations();
     $scope.loadMonthlyRecommendations();
     $scope.loadProducts();

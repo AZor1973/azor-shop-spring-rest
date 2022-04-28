@@ -94,12 +94,16 @@ public class ProductsController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> saveNewProduct(@RequestHeader @Parameter(description = "Категории  продукта", required = true) String categories,
                                             @RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
-                                            BindingResult bindingResult) {
+                                            @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
+        setCategoriesToProductDto(categories, productDto);
+        StringResponseRequestDto response = productsService.tryToSaveNewProduct(productDto, bindingResult);
+        return new ResponseEntity<>(response, response.getHttpStatus());
+    }
+
+    private void setCategoriesToProductDto(String categories, ProductDto productDto) {
         productDto.setCategories(Set.copyOf(Arrays.asList(categories.split(",")))
                 .stream().map(categoriesService::findCategoryByTitle)
                 .collect(Collectors.toSet()));
-        StringResponseRequestDto response = productsService.tryToSaveNewProduct(productDto, bindingResult);
-        return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
     @Operation(
@@ -117,9 +121,12 @@ public class ProductsController {
     )
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public ProductDto updateProduct(@RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto) {
-        Product product = productsService.update(productDto);
-        return productConverter.productToProductDto(product);
+    public ResponseEntity<?> updateProduct(@RequestHeader @Parameter(description = "Категории  продукта", required = true) String categories,
+                                    @RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto,
+                                    @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
+        setCategoriesToProductDto(categories, productDto);
+        StringResponseRequestDto response = productsService.tryToUpdateProduct(productDto, bindingResult);
+        return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
     @Operation(
