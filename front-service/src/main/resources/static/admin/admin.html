@@ -6,8 +6,9 @@
     <div class="row g-2">
         <div class="col-6 col-md-2">
             <!--         Сбоку-->
+            Что-то сбоку
         </div>
-        <div class="col-sm-6 col-md-10">
+        <div class="col-6 col-md-10">
             <!--       По центру-->
             <button class="btn btn-primary" ng-click="showProductForm()">Создать новый продукт</button>
 
@@ -33,11 +34,53 @@
                 <button class="btn btn-primary" ng-click="createProductDto()">Создать продукт</button>
             </form>
 
-            <button class="btn btn-primary" ng-click="">Редактировать продукт</button>
+            <button class="btn btn-primary" ng-click="goToStore()">Редактировать продукт</button>
             <button class="btn btn-primary" ng-click="">Создать категорию</button>
             <button class="btn btn-primary" ng-click="">Добавить картинку к продукту</button>
-            <button class="btn btn-primary" ng-click="">Редактировать пользователей</button>
 
+            <button class="btn btn-primary" ng-click="showUserList()">Редактировать пользователей</button>
+
+            <div ng-show="isUserListAccessible">Пользователи
+                <div ng-repeat="u in usersList">
+                    {{u.id}}
+                    {{u.username}}
+                    {{u.status}}
+                    <label>Роли
+                        <div ng-repeat="r in u.roles">
+                            {{r.name}}
+                        </div>
+                    </label>
+                    <button class="btn btn-primary" ng-click="showUserForm()">Редактировать</button>
+
+                    <form ng-show="isUserFormAccessible">
+                        <input class="form-control" type="hidden" value="u.id" ng-model="profileDto.id">
+                        <div>
+                            <label>Статус
+                                <div>
+                                    <input type="radio" id="active" name="status" value="ACTIVE"
+                                           ng-model="profileDto.status">
+                                    <label for="ACTIVE">ACTIVE</label>
+                                    <input type="radio" id="NOT_ACTIVE" name="status" value="NOT_ACTIVE"
+                                           ng-model="profileDto.status">
+                                    <label for="NOT_ACTIVE">NOT_ACTIVE</label>
+                                    <input type="radio" id="DELETED" name="status" value="DELETED"
+                                           ng-model="profileDto.status">
+                                    <label for="DELETED">DELETED</label>
+                                </div>
+                            </label>
+                            <label>Роли
+                                <div ng-repeat="r in rolesSet">
+                                    <label><input type="checkbox" id="{{r.name}}" ng-click="addRole(r.name)"></label>
+                                    {{r.name}}
+                                </div>
+                            </label>
+                        </div>
+                        <p></p>
+                    </form>
+                    <span id="response2"></span>
+                    <span id="message2"></span>
+                </div>
+            </div>
 
         </div>
     </div>

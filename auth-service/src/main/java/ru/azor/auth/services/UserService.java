@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import ru.azor.api.auth.UserDto;
 import ru.azor.api.common.StringResponseRequestDto;
+import ru.azor.api.core.ProductDto;
+import ru.azor.api.enums.AccountStatus;
+import ru.azor.api.exceptions.ResourceNotFoundException;
 import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
@@ -22,6 +25,7 @@ import ru.azor.auth.repositories.UserRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,6 +35,10 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserConverter userConverter;
     private final MailService mailService;
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -83,7 +91,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Boolean isUsernamePresent(String username) {
-      return userRepository.isUsernamePresent(username) > 0;
+        return userRepository.isUsernamePresent(username) > 0;
     }
 
     public Boolean isEmailPresent(String email) {
@@ -92,8 +100,17 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void activateUser(String username) {
-        userRepository.updateUserStatus(User.AccountStatus.ACTIVE, username);
+        userRepository.updateUserStatusByUsername(AccountStatus.ACTIVE, username);
         userRepository.updateUserEnabled(true, username);
         log.info("Новый пользователь активирован");
+    }
+
+    @Transactional
+    public User updateUserStatusAndRoles(Long userId, AccountStatus status, Set<Role> roles) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+        user.setStatus(status);
+        user.setRoles(roles);
+        return user;
     }
 }

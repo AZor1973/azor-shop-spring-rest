@@ -130,7 +130,7 @@ public class ProductsController {
     }
 
     @Operation(
-            summary = "Изменение продукта",
+            summary = "Удаление продукта",
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"

@@ -6,10 +6,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import ru.azor.api.enums.AccountStatus;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Data
@@ -43,7 +44,7 @@ public class User {
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role> roles;
+    private Set<Role> roles;
 
     @CreationTimestamp
     @Column(name = "created_at")
@@ -65,8 +66,4 @@ public class User {
     @Builder.Default
     @Column(name = "enabled")
     private boolean enabled = false;
-
-    public enum AccountStatus {
-        ACTIVE, NOT_ACTIVE, DELETED
-    }
 }

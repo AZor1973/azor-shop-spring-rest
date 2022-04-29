@@ -19,7 +19,7 @@
                 controller: 'cartController'
             })
             .when('/orders', {
-                templateUrl: 'orders/orders.html',
+                templateUrl: 'order/orders.html',
                 controller: 'ordersController'
             })
             .when('/order_pay/:orderId', {

@@ -4,9 +4,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import ru.azor.api.enums.AccountStatus;
+import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -20,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Query("update User u set u.status = ?1 where u.username = ?2")
-    void updateUserStatus(User.AccountStatus status, String username);
+    void updateUserStatusByUsername(AccountStatus status, String username);
 
     @Modifying
     @Query("update User u set u.enabled = ?1 where u.username = ?2")
