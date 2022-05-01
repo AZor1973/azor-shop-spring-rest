@@ -1,9 +1,11 @@
 angular.module('market-front').controller('adminController', function ($scope, $http, $location, $localStorage) {
-    const contextPath = 'http://localhost:5555/core/';
+    const contextCorePath = 'http://localhost:5555/core/';
+    const contextAuthPath = 'http://localhost:5555/auth/';
 
     $scope.isProductFormAccessible = false;
     $scope.isUserListAccessible = false;
     $scope.isUserFormAccessible = false;
+    $scope.isCategoryFormAccessible = false;
     $scope.productDto = null;
     $scope.profileDto = null;
     $scope.newCategories = new Set();
@@ -13,12 +15,24 @@ angular.module('market-front').controller('adminController', function ($scope, $
         if ($scope.isUserHasAdminRole()) {
             if ($scope.isProductFormAccessible === false) {
                 $scope.isProductFormAccessible = true;
-                $http.get(contextPath + '/api/v1/categories')
+                $http.get(contextCorePath + '/api/v1/categories')
                     .then(function successCallback(response) {
                         $scope.categoriesSet = response.data;
                     });
             } else {
                 $scope.isProductFormAccessible = false;
+            }
+        } else {
+            alert('Недостаточно прав')
+        }
+    };
+
+    $scope.showCategoryForm = function () {
+        if ($scope.isUserHasAdminRole()) {
+            if ($scope.isCategoryFormAccessible === false) {
+                $scope.isCategoryFormAccessible = true;
+            } else {
+                $scope.isCategoryFormAccessible = false;
             }
         } else {
             alert('Недостаточно прав')
@@ -31,7 +45,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
 
                 $scope.isUserListAccessible = true;
 
-                $http.get('http://localhost:5555/auth/api/v1/profile')
+                $http.get(contextAuthPath + '/api/v1/profile')
                     .then(function successCallback(response) {
                         $scope.usersList = response.data;
                     });
@@ -46,14 +60,11 @@ angular.module('market-front').controller('adminController', function ($scope, $
     $scope.showUserForm = function () {
         if ($scope.isUserHasAdminRole()) {
             if ($scope.isUserFormAccessible === false) {
-
                 $scope.isUserFormAccessible = true;
-
-                $http.get('http://localhost:5555/auth/api/v1/roles')
+                $http.get(contextAuthPath + '/api/v1/roles')
                     .then(function successCallback(response) {
                         $scope.rolesSet = response.data;
                     });
-
             } else {
                 $scope.isUserFormAccessible = false;
                 $scope.updateProfileDto();
@@ -67,10 +78,6 @@ angular.module('market-front').controller('adminController', function ($scope, $
         $location.path('/store');
     }
 
-    $scope.createProfileDto = function () {
-        console.log();
-    }
-
     $scope.updateProfileDto = function () {
         if ($scope.newRoles.size === 0) {
             document.getElementById('message2').innerHTML = 'Должна быть выбрана хотя бы одна роль';
@@ -78,7 +85,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
         }
         $scope.roles = Array.from($scope.newRoles).join(',');
         $http({
-            url: 'http://localhost:5555/auth/api/v1/profile',
+            url: contextAuthPath + '/api/v1/profile',
             method: 'PUT',
             data: $scope.profileDto,
             headers: {'roles': $scope.roles}
@@ -101,7 +108,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
         }
         $scope.categories = Array.from($scope.newCategories).join(',');
         $http({
-            url: contextPath + '/api/v1/products',
+            url: contextCorePath + '/api/v1/products',
             method: 'POST',
             data: $scope.productDto,
             headers: {'categories': $scope.categories}
@@ -114,6 +121,22 @@ angular.module('market-front').controller('adminController', function ($scope, $
                 }
             }, function errorCallback(response) {
                 document.getElementById('response').innerHTML = response.data.value;
+            });
+    };
+
+    $scope.createCategoryDto = function () {
+        $http({
+            url: contextCorePath + '/api/v1/categories',
+            method: 'POST',
+            data: $scope.categoryDto,
+        })
+            .then(function successCallback(response) {
+                if (response.data.value === "Новый продукт создан") {
+                    document.getElementById('response3').innerHTML = response.data.value;
+                    $scope.categoryDto = null;
+                }
+            }, function errorCallback(response) {
+                document.getElementById('response3').innerHTML = response.data.value;
             });
     };
 

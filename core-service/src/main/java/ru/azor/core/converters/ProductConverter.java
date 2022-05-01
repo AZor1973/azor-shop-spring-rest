@@ -27,7 +27,7 @@ public class ProductConverter {
         return categories.stream().map(this::categoryToCategoryDto).collect(Collectors.toSet());
     }
 
-    private Category categoryDtoToCategory(CategoryDto categoryDto) {
+    public Category categoryDtoToCategory(CategoryDto categoryDto) {
         return new Category(categoryDto.getId(), categoryDto.getTitle());
     }
 

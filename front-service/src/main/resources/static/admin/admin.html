@@ -35,7 +35,20 @@
             </form>
 
             <button class="btn btn-primary" ng-click="goToStore()">Редактировать продукт</button>
-            <button class="btn btn-primary" ng-click="">Создать категорию</button>
+
+            <button class="btn btn-primary" ng-click="showCategoryForm()">Создать категорию</button>
+
+            <form ng-show="isCategoryFormAccessible">
+                <label>Название категории
+                    <input class="form-control" type="text" placeholder="Название категории" ng-model="categoryDto.title"
+                           ng-click="cleanResponse()">
+                </label>
+                <p></p>
+                <span id="response3"></span>
+                <p></p>
+                <button class="btn btn-primary" ng-click="createCategoryDto()">Создать категорию</button>
+            </form>
+
             <button class="btn btn-primary" ng-click="">Добавить картинку к продукту</button>
 
             <button class="btn btn-primary" ng-click="showUserList()">Редактировать пользователей</button>
