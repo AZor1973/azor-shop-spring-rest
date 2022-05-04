@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.common.StringResponseRequestDto;
+import ru.azor.api.core.CategoryDto;
 import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.ResourceNotFoundException;
@@ -22,7 +23,6 @@ import ru.azor.core.services.CategoriesService;
 import ru.azor.core.services.ProductsService;
 
 import javax.validation.Valid;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -92,17 +92,17 @@ public class ProductsController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> saveNewProduct(@RequestHeader @Parameter(description = "Категории  продукта", required = true) String categories,
-                                            @RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
+    public ResponseEntity<?> saveNewProduct(@RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
                                             @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
-        setCategoriesToProductDto(categories, productDto);
+        System.out.println(productDto.getCategories());
+                setCategoriesToProductDto(productDto.getCategories(), productDto);
         StringResponseRequestDto response = productsService.tryToSaveNewProduct(productDto, bindingResult);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 
-    private void setCategoriesToProductDto(String categories, ProductDto productDto) {
-        productDto.setCategories(Set.copyOf(Arrays.asList(categories.split(",")))
-                .stream().map(categoriesService::findCategoryByTitle)
+    private void setCategoriesToProductDto(Set<CategoryDto> categories, ProductDto productDto) {
+        productDto.setCategories(categories
+                .stream().map(c -> categoriesService.findCategoryByTitle(c.getTitle()))
                 .collect(Collectors.toSet()));
     }
 
@@ -121,10 +121,9 @@ public class ProductsController {
     )
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> updateProduct(@RequestHeader @Parameter(description = "Категории  продукта", required = true) String categories,
-                                    @RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto,
+    public ResponseEntity<?> updateProduct(@RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto,
                                     @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
-        setCategoriesToProductDto(categories, productDto);
+        setCategoriesToProductDto(productDto.getCategories(), productDto);
         StringResponseRequestDto response = productsService.tryToUpdateProduct(productDto, bindingResult);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }

@@ -22,8 +22,9 @@
                            ng-click="cleanResponse()">
                 </label>
                 <label>Категории
+                    <input class="form-control" type="text" placeholder="Категории" ng-model="productDto.categories"
+                           ng-click="cleanResponse()">
                     <div ng-repeat="c in categoriesSet">
-                        <label><input type="checkbox" ng-click="addCategory(c.title)"></label>
                         {{c.title}}
                     </div>
                 </label>

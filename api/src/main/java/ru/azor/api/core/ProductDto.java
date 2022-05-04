@@ -1,9 +1,11 @@
 package ru.azor.api.core;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.azor.api.converters.SetCategoryDtoDeserializer;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
@@ -28,7 +30,7 @@ public class ProductDto implements Serializable {
     @Digits(integer=10, fraction=2)
     @Schema(description = "Цена продукта", required = true, example = "120.00")
     private BigDecimal price;
-
     @Schema(description = "Категории продукта", required = true, example = "{Молочные продукты, Скоропортящиеся товары}")
+    @JsonDeserialize(using = SetCategoryDtoDeserializer.class)
     private Set<CategoryDto> categories;
 }

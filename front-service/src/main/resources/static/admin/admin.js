@@ -8,7 +8,6 @@ angular.module('market-front').controller('adminController', function ($scope, $
     $scope.isCategoryFormAccessible = false;
     $scope.productDto = null;
     $scope.profileDto = null;
-    $scope.newCategories = new Set();
     $scope.newRoles = new Set();
 
     $scope.showProductForm = function () {
@@ -102,22 +101,15 @@ angular.module('market-front').controller('adminController', function ($scope, $
     }
 
     $scope.createProductDto = function () {
-        if ($scope.newCategories.size === 0) {
-            document.getElementById('message').innerHTML = 'Должна быть выбрана хотя бы одна категория';
-            document.getElementById('response').innerHTML = '';
-        }
-        $scope.categories = Array.from($scope.newCategories).join(',');
         $http({
             url: contextCorePath + '/api/v1/products',
             method: 'POST',
             data: $scope.productDto,
-            headers: {'categories': $scope.categories}
         })
             .then(function successCallback(response) {
                 if (response.data.value === "Новый продукт создан") {
                     document.getElementById('response').innerHTML = response.data.value;
                     $scope.productDto = null;
-                    $scope.newCategories.clear();
                 }
             }, function errorCallback(response) {
                 document.getElementById('response').innerHTML = response.data.value;
@@ -145,14 +137,6 @@ angular.module('market-front').controller('adminController', function ($scope, $
             $scope.newRoles.delete(role);
         } else {
             $scope.newRoles.add(role);
-        }
-    }
-
-    $scope.addCategory = function (category) {
-        if ($scope.newCategories.has(category)) {
-            $scope.newCategories.delete(category);
-        } else {
-            $scope.newCategories.add(category);
         }
     }
 
