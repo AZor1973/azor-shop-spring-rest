@@ -17,7 +17,6 @@ public class SetCategoryDtoDeserializer extends JsonDeserializer<Set<CategoryDto
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         String json = jsonParser.getValueAsString();
-        System.out.println(json);
         Set<String> categoryTitles = Set.copyOf(Arrays.asList(json.split(" ")));
         Set<CategoryDto> categoriesDto = new HashSet<>();
         for (String categoryTitle : categoryTitles) {

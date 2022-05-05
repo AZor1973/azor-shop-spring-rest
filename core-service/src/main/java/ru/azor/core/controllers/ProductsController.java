@@ -94,7 +94,6 @@ public class ProductsController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> saveNewProduct(@RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
                                             @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
-        System.out.println(productDto.getCategories());
                 setCategoriesToProductDto(productDto.getCategories(), productDto);
         StringResponseRequestDto response = productsService.tryToSaveNewProduct(productDto, bindingResult);
         return new ResponseEntity<>(response, response.getHttpStatus());
