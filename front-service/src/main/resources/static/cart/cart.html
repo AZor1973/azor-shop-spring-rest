@@ -19,6 +19,12 @@
             <td>{{item.pricePerProduct + ' x ' + item.quantity + ' = ' + item.price}}</td>
             <td>
                 <button class="btn btn-danger" ng-click="deleteCartItemFromCart(item.productId)">Удалить</button>
+
+<!--                <form ng-click="deleteCartItemFromCart(item.productId)">-->
+<!--                    <input type="hidden" ng-model="_method" value="DELETE"/>-->
+<!--                    <input class="btn btn-danger" type="submit" value="Удалить">-->
+<!--                </form>-->
+
             </td>
         </tr>
         <tr>
