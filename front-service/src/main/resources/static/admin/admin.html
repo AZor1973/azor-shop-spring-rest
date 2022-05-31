@@ -22,11 +22,17 @@
                            ng-click="cleanResponse()">
                 </label>
                 <label>Категории
-                    <input class="form-control" type="text" placeholder="Категории" ng-model="productDto.categories"
-                           ng-click="cleanResponse()">
                     <div ng-repeat="c in categoriesSet">
-                        {{c.title}}
+                        <input type="checkbox">
+                        {{ c.title }}
                     </div>
+
+
+<!--                    <input class="form-control" type="text" placeholder="Категории" ng-model="productDto.categories"-->
+<!--                           ng-click="cleanResponse()">-->
+<!--                    <div ng-repeat="c in categoriesSet">-->
+<!--                        {{c.title}}-->
+<!--                    </div>-->
                 </label>
                 <p></p>
                 <span id="response"></span>
@@ -41,7 +47,8 @@
 
             <form ng-show="isCategoryFormAccessible">
                 <label>Название категории
-                    <input class="form-control" type="text" placeholder="Название категории" ng-model="categoryDto.title"
+                    <input class="form-control" type="text" placeholder="Название категории"
+                           ng-model="categoryDto.title"
                            ng-click="cleanResponse()">
                 </label>
                 <p></p>
