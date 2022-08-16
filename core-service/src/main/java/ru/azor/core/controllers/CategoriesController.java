@@ -101,7 +101,7 @@ public class CategoriesController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                            content = @Content(schema = @Schema(implementation = CategoryDto.class))
                     ),
                     @ApiResponse(
                             description = "Ошибка", responseCode = "4XX",
@@ -110,10 +110,10 @@ public class CategoriesController {
             }
     )
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody @Parameter(description = "Изменённая категория", required = true) @Valid CategoryDto categoryDto,
-                                    @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
+    public CategoryDto update(@RequestBody @Parameter(description = "Изменённая категория", required = true) @Valid CategoryDto categoryDto,
+                              @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
         Category category = categoriesService.tryToSave(categoryDto, bindingResult);
-        return new ResponseEntity<>(productConverter.categoryToCategoryDto(category), HttpStatus.OK);
+        return productConverter.categoryToCategoryDto(category);
     }
 
     @Operation(

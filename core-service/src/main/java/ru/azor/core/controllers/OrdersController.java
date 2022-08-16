@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.core.OrderDto;
+import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.AppError;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.core.converters.OrderConverter;
@@ -23,6 +24,7 @@ import ru.azor.core.services.OrderStatisticService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -60,7 +62,7 @@ public class OrdersController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                            content = @Content(schema = @Schema(implementation = List.class))
                     ),
                     @ApiResponse(
                             description = "Ошибка", responseCode = "4XX",
@@ -69,10 +71,9 @@ public class OrdersController {
             }
     )
     @GetMapping
-    public ResponseEntity<?> getAll() {
-        List<OrderDto> orders = ordersService.findAll().stream()
+    public List<OrderDto> getAll() {
+        return ordersService.findAll().stream()
                 .map(orderConverter::entityToDto).collect(Collectors.toList());
-        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @Operation(
@@ -80,7 +81,7 @@ public class OrdersController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                            content = @Content(schema = @Schema(implementation = List.class))
                     ),
                     @ApiResponse(
                             description = "Ошибка", responseCode = "4XX",
@@ -89,10 +90,9 @@ public class OrdersController {
             }
     )
     @GetMapping("/username")
-    public ResponseEntity<?> getCurrentUserOrders(@RequestHeader @Parameter(description = "Имя пользователя", required = true) String username) {
-        List<OrderDto> orders = ordersService.findByUsername(username).stream()
+    public List<OrderDto> getCurrentUserOrders(@RequestHeader @Parameter(description = "Имя пользователя", required = true) String username) {
+        return ordersService.findByUsername(username).stream()
                 .map(orderConverter::entityToDto).collect(Collectors.toList());
-        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @Operation(
@@ -118,7 +118,7 @@ public class OrdersController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                            content = @Content(schema = @Schema(implementation = Set.class))
                     ),
                     @ApiResponse(
                             description = "Ошибка", responseCode = "4XX",
@@ -127,7 +127,7 @@ public class OrdersController {
             }
     )
     @GetMapping("/stat/{quantity}")
-    public ResponseEntity<?> getStatistic(@PathVariable @Parameter(description = "Диапазон отбора статистики", required = true) Integer quantity) {
-        return new ResponseEntity<>(orderStatisticService.getRangeStatistic(quantity).keySet(), HttpStatus.OK);
+    public Set<ProductDto> getStatistic(@PathVariable @Parameter(description = "Диапазон отбора статистики", required = true) Integer quantity) {
+        return orderStatisticService.getRangeStatistic(quantity).keySet();
     }
 }
