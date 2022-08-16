@@ -11,7 +11,7 @@ import ru.azor.api.enums.OrderStatus;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "orders")
@@ -28,8 +28,11 @@ public class Order {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "full_name")
+    private String fullName;
+
     @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<OrderItem> items;
+    private Set<OrderItem> items;
 
     @Column(name = "total_price")
     private BigDecimal totalPrice;

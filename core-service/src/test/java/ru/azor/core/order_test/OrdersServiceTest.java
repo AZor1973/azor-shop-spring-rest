@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.validation.BindingResult;
 import ru.azor.api.carts.CartDto;
 import ru.azor.api.carts.CartItemDto;
 import ru.azor.api.core.OrderDetailsDto;
@@ -24,7 +25,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @SpringBootTest(classes = {OrdersService.class})
 public class OrdersServiceTest {
@@ -36,6 +37,8 @@ public class OrdersServiceTest {
     private CartServiceIntegration cartServiceIntegration;
     @MockBean
     private ProductsService productsService;
+    @MockBean
+    private BindingResult bindingResult;
     @MockBean
     private OrderStatisticService orderStatisticService;
     private final static String USERNAME = "test_username";
@@ -72,8 +75,8 @@ public class OrdersServiceTest {
     public void createOrderTest() {
         Mockito.doReturn(cartDto).when(cartServiceIntegration).getUserCart(USERNAME);
         Mockito.doReturn(Optional.of(product)).when(productsService).findById(cartItemDto.getProductId());
-        Mockito.doNothing().when(orderStatisticService).addStatistic(new CopyOnWriteArrayList<>());
-        Order order = ordersService.createOrder(USERNAME, orderDetailsDto);
+        Mockito.doNothing().when(orderStatisticService).addStatistic(new CopyOnWriteArraySet<>());
+        Order order = ordersService.save(USERNAME, orderDetailsDto, bindingResult);
         Assertions.assertEquals(order.getOrderStatus(), OrderStatus.CREATED);
         Assertions.assertEquals(order.getTotalPrice(), cartDto.getTotalPrice());
         Assertions.assertEquals(order.getItems().size(), cartDto.getItems().size());

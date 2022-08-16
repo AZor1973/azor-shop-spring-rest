@@ -1,21 +1,28 @@
 package ru.azor.core.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import ru.azor.api.carts.CartDto;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.enums.OrderStatus;
 import ru.azor.api.exceptions.ClientException;
+import ru.azor.api.exceptions.ValidationException;
 import ru.azor.core.entities.Order;
 import ru.azor.core.entities.OrderItem;
 import ru.azor.core.integrations.CartServiceIntegration;
 import ru.azor.core.repositories.OrdersRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrdersService {
@@ -24,50 +31,77 @@ public class OrdersService {
     private final ProductsService productsService;
     private final OrderStatisticService orderStatisticService;
 
-    @Transactional
-    public Order createOrder(String username, OrderDetailsDto orderDetailsDto) {
+
+    public Order save(String username, OrderDetailsDto orderDetailsDto, BindingResult bindingResult) {
+        if (username == null || orderDetailsDto == null) {
+            throw new ClientException("Невалидные параметры", HttpStatus.BAD_REQUEST);
+        }
+        if (bindingResult.hasErrors()) {
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            throw new ValidationException("Ошибка валидации", errors, HttpStatus.BAD_REQUEST);
+        }
         CartDto currentCart = cartServiceIntegration.getUserCart(username);
         Order order = new Order();
+        order.setFullName(orderDetailsDto.getFullName());
         order.setAddress(orderDetailsDto.getAddress());
         order.setPhone(orderDetailsDto.getPhone());
         order.setUsername(username);
         order.setTotalPrice(currentCart.getTotalPrice());
         order.setOrderStatus(OrderStatus.CREATED);
-        List<OrderItem> items = currentCart.getItems().stream()
-                .map(o -> {
+        Set<OrderItem> items = currentCart.getItems().stream()
+                .map(i -> {
                     OrderItem item = new OrderItem();
                     item.setOrder(order);
-                    item.setQuantity(o.getQuantity());
-                    item.setPricePerProduct(o.getPricePerProduct());
-                    item.setPrice(o.getPrice());
-                    item.setProduct(productsService.findById(o.getProductId())
-                            .orElseThrow(() -> new ClientException("Product not found")));
+                    item.setQuantity(i.getQuantity());
+                    item.setPricePerProduct(i.getPricePerProduct());
+                    item.setPrice(i.getPrice());
+                    item.setProduct(productsService.findById(i.getProductId())
+                            .orElseThrow(() -> new ClientException("Товар не найден", HttpStatus.NOT_FOUND)));
                     return item;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toSet());
         order.setItems(items);
-        ordersRepository.save(order);
+        Order savedOrder = ordersRepository.save(order);
         cartServiceIntegration.clearUserCart(username);
+        log.info("Saved order: " + savedOrder.getId());
         orderStatisticService.addStatistic(items);
-        return order;
+        return savedOrder;
     }
 
     public boolean isOrderStatusPresent(OrderStatus orderStatus, Long orderId) {
-        return ordersRepository.isOrderStatusPresent(orderStatus, orderId) > 0;
+        return ordersRepository.countByStatusAndId(orderStatus, orderId) > 0;
     }
 
-    public List<Order> findOrdersByUsername(String username) {
+    public List<Order> findAll() {
+        return ordersRepository.findAll();
+    }
+
+    public List<Order> findByUsername(String username) {
+        if (username == null) {
+            log.error("Find by username: username = null");
+            return Collections.emptyList();
+        }
         return ordersRepository.findAllByUsername(username);
     }
 
     public Optional<Order> findById(Long id) {
-        return ordersRepository.findById(id);
+        if (id == null) {
+            log.error("Find by id: id = null");
+            return Optional.empty();
+        }
+        Optional<Order> optionalOrder = ordersRepository.findById(id);
+        log.info("Find by id: id = " + id);
+        return optionalOrder;
     }
 
-    public void deleteOrder(Long orderId) {
+    public void deleteById(Long id) {
+        if (id == null) {
+            throw new ClientException("Невалидный параметр, идентификатор:" + null, HttpStatus.BAD_REQUEST);
+        }
         try {
-            ordersRepository.deleteById(orderId);
-        } catch (ClientException ex) {
-            throw new ClientException("Ошибка удаления заказа. Заказ " + orderId + "не существует");
+            ordersRepository.deleteById(id);
+            log.info("Deleted: id = " + id);
+        } catch (Exception ex) {
+            throw new ClientException("Ошибка удаления заказа. Заказ " + id + "не существует", HttpStatus.NOT_FOUND);
         }
     }
 
@@ -75,7 +109,7 @@ public class OrdersService {
         try {
             ordersRepository.changeOrderStatus(orderStatus, orderId);
         } catch (ClientException ex) {
-            throw new ClientException("Ошибка изменения статуса заказа. Заказ " + orderId + "не существует");
+            throw new ClientException("Ошибка изменения статуса заказа. Заказ " + orderId + "не существует", HttpStatus.NOT_FOUND);
         }
     }
 }

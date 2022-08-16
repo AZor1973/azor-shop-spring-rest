@@ -41,6 +41,7 @@ create table orders
 (
     id          bigserial primary key,
     username    varchar(255)  not null,
+    full_name    varchar(255)  not null,
     total_price numeric(8, 2) not null,
     address     varchar(255),
     phone       varchar(255),

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import ru.azor.api.enums.OrderStatus;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,10 +16,12 @@ import java.util.List;
 public class OrderDto {
     @Schema(description = "ID заказа", required = true, example = "1")
     private Long id;
-    @Schema(description = "Имя получателя", required = true, example = "Иванов Иван Иванович")
+    @Schema(description = "Ник получателя", required = true, example = "user")
     private String username;
+    @Schema(description = "Ф.И.О. получателя", required = true, example = "Иванов Иван Иванович")
+    private String fullName;
     @Schema(description = "Список покупок", required = true, example = "{1, Хлеб, 4, 30.00, 120.00}")
-    private List<OrderItemDto> items;
+    private Set<OrderItemDto> items;
     @Schema(description = "Стоимость заказа", required = true, example = "1000.00")
     private BigDecimal totalPrice;
     @Schema(description = "Адрес доставки", required = true, example = "603000, г. Москва, ул. Прямая, д.10, кв.1")

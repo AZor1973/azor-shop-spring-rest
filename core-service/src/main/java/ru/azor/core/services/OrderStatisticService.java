@@ -10,9 +10,9 @@ import ru.azor.api.core.ProductDto;
 import ru.azor.core.converters.ProductConverter;
 import ru.azor.core.entities.OrderItem;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -42,7 +42,7 @@ public class OrderStatisticService {
         return result;
     }
 
-    public void addStatistic(List<OrderItem> orderItems) {
+    public void addStatistic(Set<OrderItem> orderItems) {
         ConcurrentHashMap<ProductDto, Integer> result = new ConcurrentHashMap<>();
         orderItems.stream().map(i -> productConverter.entityToDto(i.getProduct()))
                 .forEach(p -> {

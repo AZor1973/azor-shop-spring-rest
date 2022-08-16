@@ -8,22 +8,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.core.OrderDto;
-import ru.azor.api.common.StringResponseRequestDto;
+import ru.azor.api.exceptions.AppError;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.core.converters.OrderConverter;
+import ru.azor.core.entities.Order;
 import ru.azor.core.services.OrdersService;
 import ru.azor.core.services.OrderStatisticService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -44,30 +43,36 @@ public class OrdersController {
                             content = @Content(schema = @Schema(implementation = ResponseEntity.class))
                     ),
                     @ApiResponse(
-                            description = "Ошибка", responseCode = "400",
-                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestHeader @Parameter(description = "Имя пользователя", required = true) String username, @RequestBody @Valid @Parameter(description = "Детали заказа", required = true) OrderDetailsDto orderDetailsDto,
-                                         BindingResult bindingResult) {
-        String response;
-        HttpStatus httpStatus;
-        List<String> errors = bindingResult.getAllErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
-        if (bindingResult.hasErrors()) {
-            response = String.join(" ,", errors);
-            httpStatus = HttpStatus.BAD_REQUEST;
-            log.error("Ошибка ввода данных деталей заказа");
-            return new ResponseEntity<>(StringResponseRequestDto.builder()
-                    .value(response).build(), httpStatus);
-        }
-        ordersService.createOrder(username, orderDetailsDto);
-        httpStatus = HttpStatus.CREATED;
-        log.info("Order created");
-        return new ResponseEntity<>(StringResponseRequestDto.builder()
-                .value("Order created").build(), httpStatus);
+    public ResponseEntity<?> save(@RequestHeader @Parameter(description = "Имя пользователя", required = true) String username, @RequestBody @Valid @Parameter(description = "Детали заказа", required = true) OrderDetailsDto orderDetailsDto,
+                                  BindingResult bindingResult) {
+        Order order = ordersService.save(username, orderDetailsDto, bindingResult);
+        return new ResponseEntity<>(orderConverter.entityToDto(order), HttpStatus.CREATED);
+    }
+
+    @Operation(
+            summary = "Все заказы",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200",
+                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
+                    )
+            }
+    )
+    @GetMapping
+    public ResponseEntity<?> getAll() {
+        List<OrderDto> orders = ordersService.findAll().stream()
+                .map(orderConverter::entityToDto).collect(Collectors.toList());
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @Operation(
@@ -75,15 +80,19 @@ public class OrdersController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = List.class))
+                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<OrderDto> getCurrentUserOrders(@RequestHeader @Parameter(description = "Имя пользователя", required = true) String username) {
-        return ordersService.findOrdersByUsername(username).stream()
+    @GetMapping("/username")
+    public ResponseEntity<?> getCurrentUserOrders(@RequestHeader @Parameter(description = "Имя пользователя", required = true) String username) {
+        List<OrderDto> orders = ordersService.findByUsername(username).stream()
                 .map(orderConverter::entityToDto).collect(Collectors.toList());
+        return new ResponseEntity<>(orders, HttpStatus.OK);
     }
 
     @Operation(
@@ -92,13 +101,16 @@ public class OrdersController {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
                             content = @Content(schema = @Schema(implementation = OrderDto.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public OrderDto getOrderById(@PathVariable @Parameter(description = "Идентификатор заказа", required = true) Long id) {
-        return orderConverter.entityToDto(ordersService.findById(id).orElseThrow(() -> new ClientException("ORDER 404")));
+    public OrderDto getById(@PathVariable @Parameter(description = "Идентификатор заказа", required = true) Long id) {
+        return orderConverter.entityToDto(ordersService.findById(id).orElseThrow(() -> new ClientException("Заказ не найден, id: " + id, HttpStatus.NOT_FOUND)));
     }
 
     @Operation(
@@ -106,16 +118,16 @@ public class OrdersController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = StringResponseRequestDto.class))
+                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @GetMapping("/stat/{quantity}")
-    @ResponseStatus(HttpStatus.OK)
-    public StringResponseRequestDto getStatistic(@PathVariable @Parameter(description = "Диапазон отбора статистики", required = true) Integer quantity) {
-        return StringResponseRequestDto.builder()
-                .list(new CopyOnWriteArrayList<>(orderStatisticService.getRangeStatistic(quantity).keySet()))
-                .httpStatus(HttpStatus.OK)
-                .build();
+    public ResponseEntity<?> getStatistic(@PathVariable @Parameter(description = "Диапазон отбора статистики", required = true) Integer quantity) {
+        return new ResponseEntity<>(orderStatisticService.getRangeStatistic(quantity).keySet(), HttpStatus.OK);
     }
 }

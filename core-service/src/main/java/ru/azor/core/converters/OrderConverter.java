@@ -18,7 +18,7 @@ public class OrderConverter {
         out.setPhone(order.getPhone());
         out.setTotalPrice(order.getTotalPrice());
         out.setUsername(order.getUsername());
-        out.setItems(order.getItems().stream().map(this::itemToDto).collect(Collectors.toList()));
+        out.setItems(order.getItems().stream().map(this::itemToDto).collect(Collectors.toSet()));
         out.setOrderStatus(order.getOrderStatus());
         return out;
     }

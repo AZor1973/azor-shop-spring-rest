@@ -75,7 +75,7 @@ public class ProductsController {
     public ProductDto getById(
             @PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id
     ) {
-        Product product = productsService.findById(id).orElseThrow(() -> new ClientException("Product not found, id: " + id, HttpStatus.NOT_FOUND));
+        Product product = productsService.findById(id).orElseThrow(() -> new ClientException("Продукт не найден, id: " + id, HttpStatus.NOT_FOUND));
         return productConverter.entityToDto(product);
     }
 
@@ -84,7 +84,7 @@ public class ProductsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "201",
-                            content = @Content(schema = @Schema(implementation = ProductDto.class))
+                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
                     ),
                     @ApiResponse(
                             description = "Ошибка", responseCode = "4XX",
@@ -104,7 +104,7 @@ public class ProductsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = ProductDto.class))
+                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
                     ),
                     @ApiResponse(
                             description = "Ошибка", responseCode = "4XX",

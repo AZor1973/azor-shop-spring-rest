@@ -48,13 +48,13 @@ public class OrderRepositoryTest {
 
     @Test
     public void isOrderStatusPresentTest() {
-        Assertions.assertTrue(ordersRepository.isOrderStatusPresent(OrderStatus.CREATED, 1L) > 0);
+        Assertions.assertTrue(ordersRepository.countByStatusAndId(OrderStatus.CREATED, 1L) > 0);
     }
 
     @Test
     public void changeOrderStatusTest() {
-        Assertions.assertTrue(ordersRepository.isOrderStatusPresent(OrderStatus.CREATED, 1L) > 0);
+        Assertions.assertTrue(ordersRepository.countByStatusAndId(OrderStatus.CREATED, 1L) > 0);
         ordersRepository.changeOrderStatus(OrderStatus.PAID, 1L);
-        Assertions.assertTrue(ordersRepository.isOrderStatusPresent(OrderStatus.PAID, 1L) > 0);
+        Assertions.assertTrue(ordersRepository.countByStatusAndId(OrderStatus.PAID, 1L) > 0);
     }
 }
