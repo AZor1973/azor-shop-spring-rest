@@ -44,7 +44,7 @@ public class OrderStatisticService {
 
     public void addStatistic(List<OrderItem> orderItems) {
         ConcurrentHashMap<ProductDto, Integer> result = new ConcurrentHashMap<>();
-        orderItems.stream().map(i -> productConverter.productToProductDto(i.getProduct()))
+        orderItems.stream().map(i -> productConverter.entityToDto(i.getProduct()))
                 .forEach(p -> {
                     if (result.containsKey(p)) {
                         result.put(p, result.get(p) + 1);

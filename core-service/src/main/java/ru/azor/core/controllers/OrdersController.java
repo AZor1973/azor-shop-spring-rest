@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.core.OrderDto;
 import ru.azor.api.common.StringResponseRequestDto;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.core.converters.OrderConverter;
 import ru.azor.core.services.OrdersService;
 import ru.azor.core.services.OrderStatisticService;
@@ -98,7 +98,7 @@ public class OrdersController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public OrderDto getOrderById(@PathVariable @Parameter(description = "Идентификатор заказа", required = true) Long id) {
-        return orderConverter.entityToDto(ordersService.findById(id).orElseThrow(() -> new ResourceNotFoundException("ORDER 404")));
+        return orderConverter.entityToDto(ordersService.findById(id).orElseThrow(() -> new ClientException("ORDER 404")));
     }
 
     @Operation(

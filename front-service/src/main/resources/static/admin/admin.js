@@ -101,6 +101,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
     }
 
     $scope.createProductDto = function () {
+        console.log($scope.productDto);
         $http({
             url: contextCorePath + '/api/v1/products',
             method: 'POST',

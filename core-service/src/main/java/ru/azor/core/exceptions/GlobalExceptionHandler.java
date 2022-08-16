@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.azor.api.exceptions.CartServiceAppError;
 import ru.azor.api.exceptions.CartServiceIntegrationException;
 import ru.azor.api.exceptions.CoreServiceAppError;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<CoreServiceAppError> catchResourceNotFoundException(ResourceNotFoundException e) {
+    public ResponseEntity<CoreServiceAppError> catchResourceNotFoundException(ClientException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.PRODUCT_NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
     }

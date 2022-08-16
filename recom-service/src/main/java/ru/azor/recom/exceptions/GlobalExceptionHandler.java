@@ -12,7 +12,7 @@ import ru.azor.api.exceptions.*;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<RecomServiceAppError> catchResourceNotFoundException(ResourceNotFoundException e) {
+    public ResponseEntity<RecomServiceAppError> catchResourceNotFoundException(ClientException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(new RecomServiceAppError(RecomServiceAppError.RecomServiceErrors.RECOM_NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
     }

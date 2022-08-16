@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.azor.api.auth.RoleDto;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.auth.converters.RoleConverter;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.repositories.RoleRepository;
@@ -24,6 +24,6 @@ public class RoleService {
 
     public RoleDto findRoleByName(String name){
        return roleConverter.roleToRoleDto(roleRepository.findByName(name)
-               .orElseThrow(() -> new ResourceNotFoundException("Роль с именем " + " не найдена.")));
+               .orElseThrow(() -> new ClientException("Роль с именем " + " не найдена.")));
     }
 }

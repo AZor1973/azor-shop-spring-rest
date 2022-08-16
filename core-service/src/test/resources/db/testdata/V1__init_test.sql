@@ -62,4 +62,4 @@ create table order_items
 );
 
 insert into order_items (product_id, order_id, quantity, price_per_product, price)
-values (1, 1, 1, 50.20, 50.20);
+values (1, 1, 4, 50.00, 200.00);

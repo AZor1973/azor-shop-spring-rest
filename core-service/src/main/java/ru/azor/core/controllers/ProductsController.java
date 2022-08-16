@@ -16,7 +16,7 @@ import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.core.CategoryDto;
 import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.CoreServiceAppError;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.core.converters.ProductConverter;
 import ru.azor.core.entities.Product;
 import ru.azor.core.services.CategoriesService;
@@ -50,13 +50,13 @@ public class ProductsController {
             @RequestParam(name = "min_price", required = false) Integer minPrice,
             @RequestParam(name = "max_price", required = false) Integer maxPrice,
             @RequestParam(name = "title_part", required = false) String titlePart,
-            @RequestParam(name = "category_title", required = false) String categoryTitle
-            ) {
+            @RequestParam(name = "category_title", required = false) String categoryTitle,
+            @RequestParam(name = "page_size", defaultValue = "9") Integer pageSize) {
         if (page < 1) {
             page = 1;
         }
-        return productsService.findAll(minPrice, maxPrice, titlePart, categoryTitle, page).map(
-                productConverter::productToProductDto
+        return productsService.searchProducts(minPrice, maxPrice, titlePart, categoryTitle, page, pageSize).map(
+                productConverter::entityToDto
         );
     }
 
@@ -77,8 +77,8 @@ public class ProductsController {
     public ProductDto getProductById(
             @PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id
     ) {
-        Product product = productsService.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product not found, id: " + id));
-        return productConverter.productToProductDto(product);
+        Product product = productsService.findById(id).orElseThrow(() -> new ClientException("Product not found, id: " + id));
+        return productConverter.entityToDto(product);
     }
 
     @Operation(
@@ -94,7 +94,7 @@ public class ProductsController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> saveNewProduct(@RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
                                             @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
-        StringResponseRequestDto response = productsService.tryToSaveNewProduct(productDto, bindingResult);
+        StringResponseRequestDto response = productsService.tryToSave(productDto, bindingResult);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.azor.api.carts.CartDto;
 import ru.azor.api.core.OrderDetailsDto;
 import ru.azor.api.enums.OrderStatus;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.core.entities.Order;
 import ru.azor.core.entities.OrderItem;
 import ru.azor.core.integrations.CartServiceIntegration;
@@ -41,7 +41,7 @@ public class OrdersService {
                     item.setPricePerProduct(o.getPricePerProduct());
                     item.setPrice(o.getPrice());
                     item.setProduct(productsService.findById(o.getProductId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Product not found")));
+                            .orElseThrow(() -> new ClientException("Product not found")));
                     return item;
                 }).collect(Collectors.toList());
         order.setItems(items);
@@ -66,16 +66,16 @@ public class OrdersService {
     public void deleteOrder(Long orderId) {
         try {
             ordersRepository.deleteById(orderId);
-        } catch (ResourceNotFoundException ex) {
-            throw new ResourceNotFoundException("Ошибка удаления заказа. Заказ " + orderId + "не существует");
+        } catch (ClientException ex) {
+            throw new ClientException("Ошибка удаления заказа. Заказ " + orderId + "не существует");
         }
     }
 
     public void changeOrderStatus(OrderStatus orderStatus, Long orderId) {
         try {
             ordersRepository.changeOrderStatus(orderStatus, orderId);
-        } catch (ResourceNotFoundException ex) {
-            throw new ResourceNotFoundException("Ошибка изменения статуса заказа. Заказ " + orderId + "не существует");
+        } catch (ClientException ex) {
+            throw new ClientException("Ошибка изменения статуса заказа. Заказ " + orderId + "не существует");
         }
     }
 }

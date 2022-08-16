@@ -7,7 +7,7 @@ import ru.azor.api.auth.RoleDto;
 import ru.azor.api.auth.UserDto;
 import ru.azor.api.auth.ProfileDto;
 import ru.azor.api.enums.AccountStatus;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
 import ru.azor.auth.repositories.RoleRepository;
@@ -24,7 +24,7 @@ public class UserConverter {
 
     public User dtoToEntity(UserDto userDto) {
         Role role = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new ResourceNotFoundException("ROLE_USER не найдена"));
+                .orElseThrow(() -> new ClientException("ROLE_USER не найдена"));
         return User.builder()
                 .username(userDto.getUsername())
                 .firstname(userDto.getFirstname())

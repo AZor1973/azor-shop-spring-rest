@@ -14,9 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import ru.azor.api.auth.UserDto;
 import ru.azor.api.common.StringResponseRequestDto;
-import ru.azor.api.core.ProductDto;
 import ru.azor.api.enums.AccountStatus;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
@@ -108,7 +107,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public User updateUserStatusAndRoles(Long userId, AccountStatus status, Set<Role> roles) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Пользователь с идентификатором " + userId + " не найден."));
+                .orElseThrow(() -> new ClientException("Пользователь с идентификатором " + userId + " не найден."));
         user.setStatus(status);
         user.setRoles(roles);
         return user;

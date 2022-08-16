@@ -10,10 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.auth.ProfileDto;
-import ru.azor.api.core.ProductDto;
-import ru.azor.api.exceptions.ResourceNotFoundException;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.entities.User;
 import ru.azor.auth.services.RoleService;
@@ -61,7 +59,7 @@ public class ProfileController {
     @ResponseStatus(HttpStatus.OK)
     public ProfileDto getCurrentUserInfo(@PathVariable @Parameter(description = "Имя пользователя", required = true) String username) {
         User user = userService.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("Пользователь с ником " + username + " не найден."));
+                .orElseThrow(() -> new ClientException("Пользователь с ником " + username + " не найден."));
         return userConverter.userToProfileDto(user);
     }
 
