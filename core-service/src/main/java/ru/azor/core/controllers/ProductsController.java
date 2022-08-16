@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.core.CategoryDto;
 import ru.azor.api.core.ProductDto;
-import ru.azor.api.exceptions.CoreServiceAppError;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.core.converters.ProductConverter;
 import ru.azor.core.entities.Product;

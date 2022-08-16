@@ -8,8 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.core.ProductDto;
-import ru.azor.api.exceptions.CoreServiceAppError;
-import ru.azor.api.exceptions.CoreServiceIntegrationException;
 
 import java.util.concurrent.ConcurrentHashMap;
 

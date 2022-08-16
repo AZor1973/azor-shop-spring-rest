@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -57,22 +58,22 @@ public class ProductsService {
 
     public void deleteById(Long id) {
         if (id == null) {
-            throw new ClientException("Невалидный параметр, идентификатор:" + null);
+            throw new ClientException("Невалидный параметр, идентификатор:" + null, HttpStatus.BAD_REQUEST);
         }
         try {
             productsRepository.deleteById(id);
             log.info("Deleted: id = " + id);
         } catch (Exception ex) {
-            throw new ClientException("Ошибка удаления товара. Товар " + id + "не существует");
+            throw new ClientException("Ошибка удаления товара. Товар " + id + "не существует", HttpStatus.NOT_FOUND);
         }
     }
 
     private Product save(Product product) {
         if (product == null) {
-            throw new ClientException("Невалидный параметр 'product':" + null);
+            throw new ClientException("Невалидный параметр 'product':" + null, HttpStatus.BAD_REQUEST);
         }
         if (product.getId() == null && isTitlePresent(product.getTitle())) {
-            throw new ClientException("Товар с таким наименованием уже существует:" + product.getTitle());
+            throw new ClientException("Товар с таким наименованием уже существует:" + product.getTitle(), HttpStatus.CONFLICT);
         }
         Product savedProduct = productsRepository.save(product);
         log.info("Saved: " + savedProduct.getTitle());
@@ -81,11 +82,11 @@ public class ProductsService {
 
     public Product tryToSave(ProductDto productDto, BindingResult bindingResult) {
         if (productDto == null) {
-            throw new ClientException("Невалидный параметр 'productDto':" + null);
+            throw new ClientException("Невалидный параметр 'productDto':" + null, HttpStatus.BAD_REQUEST);
         }
         if (bindingResult.hasErrors()) {
             List<ObjectError> errors = bindingResult.getAllErrors();
-            throw new ValidationException("Ошибка валидации", errors);
+            throw new ValidationException("Ошибка валидации", errors, HttpStatus.BAD_REQUEST);
         }
         return save(productConverter.dtoToEntity(productDto));
     }

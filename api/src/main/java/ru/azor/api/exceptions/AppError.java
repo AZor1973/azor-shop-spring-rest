@@ -2,36 +2,22 @@ package ru.azor.api.exceptions;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.validation.ObjectError;
 
+import java.util.List;
+
+@Data
+@AllArgsConstructor
 @Schema(description = "Ошибки сервисов")
 public class AppError {
-
-    @Schema(description = "Коды ошибок сервисов", example = "PRODUCT_NOT_FOUND")
-    private Enum<?> code;
     @Schema(description = "Сообщения ошибок сервисов", example = "Продукт не найден")
     private String message;
+    @Schema(description = "Список ошибок", example = "{}")
+    private List<ObjectError> list;
 
-    public Enum<?> getCode() {
-        return code;
-    }
-
-    public void setCode(Enum<?> code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public AppError() {
-    }
-
-    public AppError(Enum<?> code, String message) {
-        this.code = code;
+    public AppError(String message) {
         this.message = message;
     }
 }

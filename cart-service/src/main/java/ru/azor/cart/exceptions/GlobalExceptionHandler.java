@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.azor.api.exceptions.CartServiceAppError;
-import ru.azor.api.exceptions.CoreServiceAppError;
-import ru.azor.api.exceptions.CoreServiceIntegrationException;
 import ru.azor.api.exceptions.ClientException;
 
 @ControllerAdvice

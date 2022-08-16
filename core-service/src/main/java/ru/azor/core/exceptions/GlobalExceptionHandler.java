@@ -1,34 +1,30 @@
 package ru.azor.core.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.azor.api.exceptions.CartServiceAppError;
-import ru.azor.api.exceptions.CartServiceIntegrationException;
-import ru.azor.api.exceptions.CoreServiceAppError;
-import ru.azor.api.exceptions.ClientException;
+import ru.azor.api.exceptions.*;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<CoreServiceAppError> catchResourceNotFoundException(ClientException e) {
+    public ResponseEntity<AppError> catchClientException(ClientException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new CoreServiceAppError(CoreServiceAppError.CoreServiceErrors.PRODUCT_NOT_FOUND, e.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new AppError(e.getMessage()), e.getHttpStatus());
     }
 
     @ExceptionHandler
-    public ResponseEntity<CartServiceAppError> catchCartServiceIntegrationException(CartServiceIntegrationException e) {
+    public ResponseEntity<AppError> catchServerException(ServerException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new CartServiceAppError(CartServiceAppError.CartServiceErrors.CART_IS_BROKEN, e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new AppError(e.getMessage()), e.getHttpStatus());
     }
 
     @ExceptionHandler
-    public ResponseEntity<FieldsValidationError> catchValidationException(ValidationException e) {
+    public ResponseEntity<AppError> catchValidationException(ValidationException e) {
         log.error(e.getMessage(), e);
-        return new ResponseEntity<>(new FieldsValidationError(e.getErrorFieldsMessages()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new AppError(e.getMessage(), e.getValidationErrors()), e.getHttpStatus());
     }
 }
