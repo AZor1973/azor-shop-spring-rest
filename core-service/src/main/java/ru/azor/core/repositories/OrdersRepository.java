@@ -18,6 +18,6 @@ public interface OrdersRepository extends JpaRepository<Order, Long> {
     Long countByStatusAndId(OrderStatus orderStatus, Long orderId);
 
     @Modifying
-    @Query("update Order o set o.orderStatus = ?1 where o.id = ?2")
+    @Query("update Order o set o.orderStatus = ?1, o.updatedAt = CURRENT_TIMESTAMP where o.id = ?2")
     void changeOrderStatus(OrderStatus orderStatus, Long orderId);
 }
