@@ -12,18 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.azor.api.common.StringResponseRequestDto;
-import ru.azor.api.core.CategoryDto;
 import ru.azor.api.core.ProductDto;
+import ru.azor.api.exceptions.AppError;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.core.converters.ProductConverter;
 import ru.azor.core.entities.Product;
-import ru.azor.core.services.CategoriesService;
 import ru.azor.core.services.ProductsService;
 
 import javax.validation.Valid;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -31,7 +27,6 @@ import java.util.stream.Collectors;
 @Tag(name = "Продукты", description = "Методы работы с продуктами")
 public class ProductsController {
     private final ProductsService productsService;
-    private final CategoriesService categoriesService;
     private final ProductConverter productConverter;
 
     @Operation(
@@ -40,11 +35,15 @@ public class ProductsController {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
                             content = @Content(schema = @Schema(implementation = Page.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @GetMapping
-    public Page<ProductDto> getAllProducts(
+    public Page<ProductDto> search(
             @RequestParam(name = "p", defaultValue = "1") Integer page,
             @RequestParam(name = "min_price", required = false) Integer minPrice,
             @RequestParam(name = "max_price", required = false) Integer maxPrice,
@@ -54,7 +53,7 @@ public class ProductsController {
         if (page < 1) {
             page = 1;
         }
-        return productsService.searchProducts(minPrice, maxPrice, titlePart, categoryTitle, page, pageSize).map(
+        return productsService.search(minPrice, maxPrice, titlePart, categoryTitle, page, pageSize).map(
                 productConverter::entityToDto
         );
     }
@@ -67,16 +66,16 @@ public class ProductsController {
                             content = @Content(schema = @Schema(implementation = ProductDto.class))
                     ),
                     @ApiResponse(
-                            description = "Ошибка", responseCode = "404",
-                            content = @Content(schema = @Schema(implementation = CoreServiceAppError.class))
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @GetMapping("/{id}")
-    public ProductDto getProductById(
+    public ProductDto getById(
             @PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id
     ) {
-        Product product = productsService.findById(id).orElseThrow(() -> new ClientException("Product not found, id: " + id));
+        Product product = productsService.findById(id).orElseThrow(() -> new ClientException("Product not found, id: " + id, HttpStatus.NOT_FOUND));
         return productConverter.entityToDto(product);
     }
 
@@ -86,21 +85,18 @@ public class ProductsController {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "201",
                             content = @Content(schema = @Schema(implementation = ProductDto.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> saveNewProduct(@RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
-                                            @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
-        StringResponseRequestDto response = productsService.tryToSave(productDto, bindingResult);
-        return new ResponseEntity<>(response, response.getHttpStatus());
-    }
-
-    private void setCategoriesToProductDto(Set<CategoryDto> categories, ProductDto productDto) {
-        productDto.setCategories(categories
-                .stream().map(c -> categoriesService.findCategoryByTitle(c.getTitle()))
-                .collect(Collectors.toSet()));
+    public ResponseEntity<?> save(@RequestBody @Parameter(description = "Новый продукт", required = true) @Valid ProductDto productDto,
+                                  @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
+        Product product = productsService.tryToSave(productDto, bindingResult);
+        return new ResponseEntity<>(productConverter.entityToDto(product), HttpStatus.CREATED);
     }
 
     @Operation(
@@ -111,18 +107,16 @@ public class ProductsController {
                             content = @Content(schema = @Schema(implementation = ProductDto.class))
                     ),
                     @ApiResponse(
-                            description = "Ошибка", responseCode = "404",
-                            content = @Content(schema = @Schema(implementation = CoreServiceAppError.class))
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @PutMapping
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> updateProduct(@RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto,
+    public ResponseEntity<?> update(@RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto,
                                     @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
-        setCategoriesToProductDto(productDto.getCategories(), productDto);
-        StringResponseRequestDto response = productsService.tryToUpdateProduct(productDto, bindingResult);
-        return new ResponseEntity<>(response, response.getHttpStatus());
+        Product product = productsService.tryToSave(productDto, bindingResult);
+        return new ResponseEntity<>(productConverter.entityToDto(product), HttpStatus.OK);
     }
 
     @Operation(
@@ -130,11 +124,14 @@ public class ProductsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
     public void deleteById(@PathVariable @Parameter(description = "Идентификатор продукта", required = true) Long id) {
         productsService.deleteById(id);
     }
