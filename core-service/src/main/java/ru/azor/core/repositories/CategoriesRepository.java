@@ -7,8 +7,6 @@ import ru.azor.core.entities.Category;
 
 @Repository
 public interface CategoriesRepository extends JpaRepository<Category, Long> {
-    Category findCategoryByTitle(String title);
-
     @Query("select count(c) from Category c where c.title = ?1")
-    Long isTitleOfProductPresent(String title);
+    Long countByTitle(String title);
 }

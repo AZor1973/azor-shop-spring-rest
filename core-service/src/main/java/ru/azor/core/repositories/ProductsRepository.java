@@ -9,5 +9,5 @@ import ru.azor.core.entities.Product;
 @Repository
 public interface ProductsRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
     @Query("select count(p) from Product p where p.title = ?1")
-    Long countOfProducts(String username);
+    Long countByTitle(String username);
 }

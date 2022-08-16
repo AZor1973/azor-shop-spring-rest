@@ -70,7 +70,7 @@ public class ProductsService {
 
     private Product save(Product product) {
         if (product == null) {
-            throw new ClientException("Невалидный параметр 'product':" + null, HttpStatus.BAD_REQUEST);
+            throw new ClientException("Невалидный параметр 'product': null", HttpStatus.BAD_REQUEST);
         }
         if (product.getId() == null && isTitlePresent(product.getTitle())) {
             throw new ClientException("Товар с таким наименованием уже существует:" + product.getTitle(), HttpStatus.CONFLICT);
@@ -82,7 +82,7 @@ public class ProductsService {
 
     public Product tryToSave(ProductDto productDto, BindingResult bindingResult) {
         if (productDto == null) {
-            throw new ClientException("Невалидный параметр 'productDto':" + null, HttpStatus.BAD_REQUEST);
+            throw new ClientException("Невалидный параметр 'productDto': null", HttpStatus.BAD_REQUEST);
         }
         if (bindingResult.hasErrors()) {
             List<ObjectError> errors = bindingResult.getAllErrors();
@@ -92,6 +92,6 @@ public class ProductsService {
     }
 
     private Boolean isTitlePresent(String title) {
-        return productsRepository.countOfProducts(title) > 0;
+        return productsRepository.countByTitle(title) > 0;
     }
 }
