@@ -11,7 +11,6 @@ import ru.azor.api.enums.AccountStatus;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
-import ru.azor.auth.repositories.RoleRepository;
 import ru.azor.auth.services.RoleService;
 
 import java.util.HashSet;
