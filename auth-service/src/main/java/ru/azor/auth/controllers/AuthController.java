@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.auth.UserDto;
-import ru.azor.api.core.ProductDto;
-import ru.azor.api.exceptions.AuthServiceAppError;
 import ru.azor.auth.services.UserService;
 import ru.azor.auth.utils.JwtTokenUtil;
 

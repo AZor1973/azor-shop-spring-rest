@@ -6,7 +6,7 @@
 
     <groupId>ru.azor</groupId>
     <artifactId>api</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>common</name>
     <description>Common module for Educational Spring Web Rest Project</description>
 

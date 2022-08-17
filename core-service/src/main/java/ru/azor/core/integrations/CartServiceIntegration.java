@@ -8,9 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.carts.CartDto;
-import ru.azor.api.core.ProductDto;
-import ru.azor.api.exceptions.CartServiceAppError;
-import ru.azor.api.exceptions.CartServiceIntegrationException;
 
 import java.util.concurrent.ConcurrentHashMap;
 

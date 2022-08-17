@@ -6,8 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.common.StringResponseRequestDto;
-import ru.azor.api.exceptions.CartServiceAppError;
-import ru.azor.api.exceptions.CartServiceIntegrationException;
 
 @Slf4j
 @Component

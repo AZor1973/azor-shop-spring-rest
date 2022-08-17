@@ -2,7 +2,6 @@ package ru.azor.gateway;
 
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpStatus;
@@ -15,22 +14,22 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Component
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    public JwtAuthFilter() {
+    public JwtAuthFilter(JwtUtil jwtUtil) {
         super(Config.class);
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-            if (!isAuthMissing(request)) {
+            if (isAuthOK(request)) {
                 final String token = getAuthHeader(request);
                 if (jwtUtil.isInvalid(token)) {
                     log.error("Authorization header is invalid");
-                    return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
+                    return this.onError(exchange);
                 }
                 populateRequestWithHeaders(exchange, token);
             }
@@ -41,9 +40,9 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
     public static class Config {
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
+    private Mono<Void> onError(ServerWebExchange exchange) {
         ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(httpStatus);
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return response.setComplete();
     }
 
@@ -51,14 +50,11 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         return request.getHeaders().getOrEmpty("Authorization").get(0).substring(7);
     }
 
-    private boolean isAuthMissing(ServerHttpRequest request) {
-        if (!request.getHeaders().containsKey("Authorization")) {
-            return true;
+    private boolean isAuthOK(ServerHttpRequest request) {
+        if (! request.getHeaders().containsKey("Authorization")) {
+            return false;
         }
-        if (!request.getHeaders().getOrEmpty("Authorization").get(0).startsWith("Bearer ")) {
-            return true;
-        }
-        return false;
+        return request.getHeaders().getOrEmpty("Authorization").get(0).startsWith("Bearer ");
     }
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, String token) {

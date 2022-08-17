@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
         CartServiceIntegrationProperties.class
 )
 @RequiredArgsConstructor
-public class AppConfig {
+public class WebClientConfig {
     private final CartServiceIntegrationProperties cartServiceIntegrationProperties;
 
     @Bean
