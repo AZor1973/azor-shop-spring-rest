@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.azor.api.auth.RoleDto;
 import ru.azor.api.exceptions.ClientException;
-import ru.azor.auth.converters.RoleConverter;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.repositories.RoleRepository;
 

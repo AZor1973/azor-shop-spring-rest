@@ -1,6 +1,7 @@
 package ru.azor.auth.converters;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.azor.api.auth.RoleDto;
@@ -24,7 +25,7 @@ public class UserConverter {
 
     public User dtoToEntity(UserDto userDto) {
         Role role = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new ClientException("ROLE_USER не найдена"));
+                .orElseThrow(() -> new ClientException("ROLE_USER не найдена", HttpStatus.NOT_FOUND));
         return User.builder()
                 .username(userDto.getUsername())
                 .firstname(userDto.getFirstname())
@@ -46,7 +47,7 @@ public class UserConverter {
                 .email(user.getEmail())
                 .phone(user.getPhone())
                 .status(user.getStatus())
-                .roles(rolesToRolesDto(user.getRoles()))
+                .rolesDto(rolesToRolesDto(user.getRoles()))
                 .build();
     }
 
@@ -58,7 +59,7 @@ public class UserConverter {
                 .email(profileDto.getEmail())
                 .phone(profileDto.getPhone())
                 .status(profileDto.getStatus())
-                .roles(rolesDtoToRoles(profileDto.getRoles()))
+                .roles(rolesDtoToRoles(profileDto.getRolesDto()))
                 .build();
     }
 

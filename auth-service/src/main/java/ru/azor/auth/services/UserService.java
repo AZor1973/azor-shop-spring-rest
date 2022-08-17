@@ -2,7 +2,6 @@ package ru.azor.auth.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,10 +11,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import ru.azor.api.auth.ProfileDto;
 import ru.azor.api.auth.UserDto;
 import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.enums.AccountStatus;
 import ru.azor.api.exceptions.ClientException;
+import ru.azor.api.exceptions.ValidationException;
 import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
@@ -24,7 +26,6 @@ import ru.azor.auth.repositories.UserRepository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -54,62 +55,61 @@ public class UserService implements UserDetailsService {
         return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
     }
 
-    public User save(User user) {
-        return userRepository.save(user);
+    public void save(User user) {
+        userRepository.save(user);
     }
 
     public StringResponseRequestDto presave(UserDto userDto, BindingResult bindingResult) {
-        String response;
-        HttpStatus httpStatus;
-        int code = 0;
-        List<String> errors = bindingResult.getAllErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
+        int code;
+        List<ObjectError> errors = bindingResult.getAllErrors();
         if (bindingResult.hasErrors()) {
-            response = String.join(" ,", errors);
-            httpStatus = HttpStatus.BAD_REQUEST;
             log.error("Ошибка ввода данных при регистрации");
+            throw new ValidationException("Ошибка ввода данных при регистрации", errors, HttpStatus.BAD_REQUEST);
         } else if (isUsernamePresent(userDto.getUsername())) {
-            response = "Пользователь с таким именем уже существует";
-            httpStatus = HttpStatus.CONFLICT;
             log.error("Пользователь с таким именем уже существует");
+            throw new ClientException("Пользователь с таким именем уже существует", HttpStatus.CONFLICT);
         } else if (isEmailPresent(userDto.getEmail())) {
-            response = "Пользователь с таким адресом электронной почты уже существует";
-            httpStatus = HttpStatus.CONFLICT;
             log.error("Пользователь с таким адресом электронной почты уже существует");
+            throw new ClientException("Пользователь с таким адресом электронной почты уже существует", HttpStatus.CONFLICT);
         } else {
             save(userConverter.dtoToEntity(userDto));
             code = mailService.sendMail(userDto.getEmail());
             log.info("Код подтверждения выслан на почту " + userDto.getEmail());
-            response = "Новый пользователь создан";
-            httpStatus = HttpStatus.CREATED;
             log.info("Новый пользователь создан");
         }
-        return StringResponseRequestDto.builder().value(response)
-                .password(String.valueOf(code))
-                .httpStatus(httpStatus).build();
+        return StringResponseRequestDto.builder()
+                .password(String.valueOf(code)).build();
     }
 
     public Boolean isUsernamePresent(String username) {
-        return userRepository.isUsernamePresent(username) > 0;
+        return userRepository.countByUsername(username) > 0;
     }
 
     public Boolean isEmailPresent(String email) {
-        return userRepository.isEmailPresent(email) > 0;
+        return userRepository.countByEmail(email) > 0;
     }
 
     @Transactional
     public void activateUser(String username) {
-        userRepository.updateUserStatusByUsername(AccountStatus.ACTIVE, username);
-        userRepository.updateUserEnabled(true, username);
-        log.info("Новый пользователь активирован");
+        try {
+            userRepository.changeStatusByUsername(AccountStatus.ACTIVE, username);
+            userRepository.changeEnabledByUsername(true, username);
+            log.info("Новый пользователь активирован");
+        } catch (Exception e) {
+            throw new ClientException("Пользователь " + username + " не найден.", HttpStatus.NOT_FOUND);
+        }
     }
 
     @Transactional
-    public User updateUserStatusAndRoles(Long userId, AccountStatus status, Set<Role> roles) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ClientException("Пользователь с идентификатором " + userId + " не найден."));
-        user.setStatus(status);
-        user.setRoles(roles);
-        return user;
+    public void updateUserStatusAndRoles(ProfileDto profileDto) {
+        try {
+            userRepository.changeStatusByUsername(profileDto.getStatus(), profileDto.getUsername());
+            profileDto.getRolesDto().forEach(roleDto -> {
+                userRepository.changeRole(roleDto.getId(), profileDto.getId());
+            });
+            userRepository.changeUpdateAt(profileDto.getId());
+        } catch (Exception e) {
+            throw new ClientException("Пользователь с идентификатором " + profileDto.getId() + " не найден.", HttpStatus.NOT_FOUND);
+        }
     }
 }

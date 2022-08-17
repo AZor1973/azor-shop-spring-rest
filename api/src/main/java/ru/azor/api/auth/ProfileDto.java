@@ -16,8 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Schema(description = "Модель профиля пользователя")
-public class ProfileDto implements Serializable {
-    private static final long serialVersionUID = 3950486092705446214L;
+public class ProfileDto {
     @Schema(description = "ID пользователя", required = true, example = "1")
     private Long id;
     @Schema(description = "Имя пользователя", required = true, example = "Иван")
@@ -35,5 +34,5 @@ public class ProfileDto implements Serializable {
     @Schema(description = "Статус пользователя", required = true, example = "NOT_ACTIVE")
     private AccountStatus status;
     @Schema(description = "Роли пользователя", required = true, example = "{'ROLE_USER'}")
-    private Set<RoleDto> roles;
+    private Set<RoleDto> rolesDto;
 }

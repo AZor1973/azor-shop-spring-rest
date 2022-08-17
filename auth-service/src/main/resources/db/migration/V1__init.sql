@@ -4,7 +4,7 @@ create table users
     firstname  varchar(80) not null,
     lastname   varchar(80) not null,
     username   varchar(36) not null unique,
-    password   varchar(80) not null,
+    password   varchar(80) not null unique,
     email      varchar(50) unique,
     phone      varchar(20) not null,
     status     varchar(20) not null,

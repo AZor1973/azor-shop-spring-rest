@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.azor.api.auth.RoleDto;
-import ru.azor.auth.converters.RoleConverter;
+import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.services.RoleService;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Tag(name = "Роли пользователя", description = "Методы работы с ролями пользователя")
 public class RolesController {
     private final RoleService roleService;
-    private final RoleConverter roleConverter;
+    private final UserConverter userConverter;
 
     @Operation(
             summary = "Запрос на получение всех ролей пользователей",
@@ -35,7 +35,7 @@ public class RolesController {
     )
     @GetMapping
     public List<RoleDto> getAllRoles(){
-        return roleService.findAll().stream().map(roleConverter::roleToRoleDto)
+        return roleService.findAll().stream().map(userConverter::roleToRoleDto)
                 .collect(Collectors.toList());
     }
 }

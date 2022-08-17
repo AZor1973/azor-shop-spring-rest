@@ -23,12 +23,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/profile")
+@RequestMapping("/api/v1/profiles")
 @RequiredArgsConstructor
 @Tag(name = "Профиль пользователя", description = "Методы работы с профилем пользователя")
 public class ProfileController {
     private final UserService userService;
-    private final RoleService roleService;
     private final UserConverter userConverter;
 
     @Operation(
@@ -55,11 +54,10 @@ public class ProfileController {
                     )
             }
     )
-    @GetMapping("{username}")
-    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{username}")
     public ProfileDto getCurrentUserInfo(@PathVariable @Parameter(description = "Имя пользователя", required = true) String username) {
         User user = userService.findByUsername(username)
-                .orElseThrow(() -> new ClientException("Пользователь с ником " + username + " не найден."));
+                .orElseThrow(() -> new ClientException("Пользователь с ником " + username + " не найден.", HttpStatus.NOT_FOUND));
         return userConverter.userToProfileDto(user);
     }
 
@@ -72,17 +70,8 @@ public class ProfileController {
             }
     )
     @PutMapping()
-    public ResponseEntity<?> updateUser(@RequestHeader @Parameter(description = "Роли  продукта", required = true) String roles,
-                           @RequestBody @Parameter(description = "Изменённый пользователь", required = true) ProfileDto profileDto){
-        setRolesToProfileDto(roles, profileDto);
-        userService.updateUserStatusAndRoles(profileDto.getId(), profileDto.getStatus(),
-                userConverter.rolesDtoToRoles(profileDto.getRoles()));
-        return new ResponseEntity<>("Пользователь обновлён", HttpStatus.OK);
-    }
-
-    private void setRolesToProfileDto(String roles, ProfileDto profileDto) {
-        profileDto.setRoles(Set.copyOf(Arrays.asList(roles.split(",")))
-                .stream().map(roleService::findRoleByName)
-                .collect(Collectors.toSet()));
+    public ResponseEntity<?> updateUser(@RequestBody @Parameter(description = "Изменённый пользователь", required = true) ProfileDto profileDto){
+        userService.updateUserStatusAndRoles(profileDto);
+        return new ResponseEntity<>(userConverter.profileDtoToUser(profileDto), HttpStatus.OK);
     }
 }
