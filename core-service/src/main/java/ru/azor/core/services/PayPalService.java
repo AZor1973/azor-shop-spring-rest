@@ -2,6 +2,7 @@ package ru.azor.core.services;
 
 import com.paypal.orders.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.azor.api.exceptions.ClientException;
@@ -17,7 +18,7 @@ public class PayPalService {
 
     @Transactional
     public OrderRequest createOrderRequest(Long orderId) {
-        ru.azor.core.entities.Order order = ordersService.findById(orderId).orElseThrow(() -> new ClientException("Заказ не найден"));
+        ru.azor.core.entities.Order order = ordersService.findById(orderId).orElseThrow(() -> new ClientException("Заказ не найден", HttpStatus.NOT_FOUND));
 
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.checkoutPaymentIntent("CAPTURE");

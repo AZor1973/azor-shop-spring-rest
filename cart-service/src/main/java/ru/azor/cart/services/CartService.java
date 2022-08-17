@@ -32,11 +32,14 @@ public class CartService {
     }
 
     public Cart getCurrentCart(String cartKey) {
-        if (Boolean.FALSE.equals(redisTemplate.hasKey(cartKey))) {
-            redisTemplate.opsForValue().set(cartKey, new Cart());
+        try {
+            if (Boolean.FALSE.equals(redisTemplate.hasKey(cartKey))) {
+                redisTemplate.opsForValue().set(cartKey, new Cart());
+            }
+            return (Cart) redisTemplate.opsForValue().get(cartKey);
+        } catch (Exception e) {
             throw new ClientException("Корзина не найдена", HttpStatus.NOT_FOUND);
         }
-        return (Cart) redisTemplate.opsForValue().get(cartKey);
     }
 
     public void addToCart(String cartKey, Long productId) {

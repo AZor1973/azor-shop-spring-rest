@@ -60,11 +60,11 @@ public class OrdersService {
                     return item;
                 }).collect(Collectors.toSet());
         order.setItems(items);
-        Order savedOrder = ordersRepository.save(order);
+        ordersRepository.save(order);
         cartServiceIntegration.clearUserCart(username);
-        log.info("Saved order: " + savedOrder.getId());
+        log.info("Saved order: " + order.getId());
         orderStatisticService.addStatistic(items);
-        return savedOrder;
+        return order;
     }
 
     public boolean isOrderStatusPresent(OrderStatus orderStatus, Long orderId) {

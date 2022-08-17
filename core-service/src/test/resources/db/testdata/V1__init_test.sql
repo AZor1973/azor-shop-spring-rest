@@ -38,6 +38,7 @@ create table orders
 (
     id          bigserial primary key,
     username    varchar(255)  not null,
+    full_name    varchar(255)  not null,
     total_price numeric(8) not null,
     address     varchar(255),
     phone       varchar(255),
@@ -46,8 +47,8 @@ create table orders
     updated_at  timestamp default current_timestamp
 );
 
-insert into orders (username, total_price, address, phone, order_status)
-values ('test_user', 200, 'address', '123456', 'CREATED');
+insert into orders (username,full_name, total_price, address, phone, order_status)
+values ('test_user', 'test_name', 200, 'address', '123456', 'CREATED');
 
 create table order_items
 (

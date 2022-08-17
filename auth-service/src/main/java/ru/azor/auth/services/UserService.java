@@ -41,7 +41,13 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        if (username == null) {
+            log.error("Find by username: username = null");
+            return Optional.empty();
+        }
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        log.info("Find by id: username = " + username);
+        return optionalUser;
     }
 
     @Override
@@ -59,7 +65,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public StringResponseRequestDto presave(UserDto userDto, BindingResult bindingResult) {
+    public StringResponseRequestDto preSave(UserDto userDto, BindingResult bindingResult) {
         int code;
         List<ObjectError> errors = bindingResult.getAllErrors();
         if (bindingResult.hasErrors()) {
@@ -104,9 +110,7 @@ public class UserService implements UserDetailsService {
     public void updateUserStatusAndRoles(ProfileDto profileDto) {
         try {
             userRepository.changeStatusByUsername(profileDto.getStatus(), profileDto.getUsername());
-            profileDto.getRolesDto().forEach(roleDto -> {
-                userRepository.changeRole(roleDto.getId(), profileDto.getId());
-            });
+            profileDto.getRolesDto().forEach(roleDto -> userRepository.changeRole(roleDto.getId(), profileDto.getId()));
             userRepository.changeUpdateAt(profileDto.getId());
         } catch (Exception e) {
             throw new ClientException("Пользователь с идентификатором " + profileDto.getId() + " не найден.", HttpStatus.NOT_FOUND);

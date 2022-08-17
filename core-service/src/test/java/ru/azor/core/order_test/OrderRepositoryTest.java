@@ -12,6 +12,7 @@ import ru.azor.core.repositories.OrdersRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @DataJpaTest
 public class OrderRepositoryTest {
@@ -20,6 +21,7 @@ public class OrderRepositoryTest {
     @Autowired
     TestEntityManager entityManager;
     private static final String USERNAME = "test_user";
+    private static final String FULL_NAME = "test_full_name";
     private static final String ADDRESS = "address";
     private static final String PHONE = "123456";
     private static final BigDecimal TOTAL_PRICE = BigDecimal.valueOf(100);
@@ -28,11 +30,12 @@ public class OrderRepositoryTest {
     public void init() {
         Order order = new Order();
         order.setUsername(USERNAME);
+        order.setFullName(FULL_NAME);
         order.setAddress(ADDRESS);
         order.setPhone(PHONE);
         order.setOrderStatus(OrderStatus.CREATED);
         order.setTotalPrice(TOTAL_PRICE);
-        order.setItems(List.of());
+        order.setItems(Set.of());
         entityManager.persist(order);
         entityManager.flush();
     }

@@ -88,7 +88,7 @@ public class AuthController {
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody @Valid @Parameter(description = "Регистрирующийся пользователь", required = true) UserDto userDto,
                                           @Parameter(description = "Вводимые данные", required = true) BindingResult bindingResult) {
-        StringResponseRequestDto response = userService.presave(userDto, bindingResult);
+        StringResponseRequestDto response = userService.preSave(userDto, bindingResult);
         if (response.getHttpStatus() == HttpStatus.CREATED) {
             codes.put(userDto.getUsername(), Integer.parseInt(response.getPassword()));
         }

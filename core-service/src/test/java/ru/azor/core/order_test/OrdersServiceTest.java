@@ -42,6 +42,7 @@ public class OrdersServiceTest {
     @MockBean
     private OrderStatisticService orderStatisticService;
     private final static String USERNAME = "test_username";
+    private final static String FULL_NAME = "test_full_name";
     private final static String ADDRESS = "test_address";
     private final static String PHONE = "test_phone";
     private final static String CATEGORY_TITLE = "test_category_title";
@@ -53,6 +54,7 @@ public class OrdersServiceTest {
     @BeforeAll
     public static void initEntities() {
         orderDetailsDto = new OrderDetailsDto();
+        orderDetailsDto.setFullName(FULL_NAME);
         orderDetailsDto.setAddress(ADDRESS);
         orderDetailsDto.setPhone(PHONE);
         cartItemDto = new CartItemDto();

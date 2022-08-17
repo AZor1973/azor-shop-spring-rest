@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.common.StringResponseRequestDto;
+import ru.azor.api.exceptions.AppError;
+import ru.azor.api.exceptions.ClientException;
+import ru.azor.api.exceptions.ServerException;
 
 @Slf4j
 @Component
@@ -18,21 +21,19 @@ public class CoreServiceIntegration {
                 .uri("/api/v1/orders/stat/" + quantity)
                 .retrieve()
                 .onStatus(
-                        HttpStatus::is4xxClientError, // HttpStatus::is4xxClientError
-                        clientResponse -> clientResponse.bodyToMono(CoreServiceAppError.class).map(
+                        HttpStatus::is4xxClientError,
+                        clientResponse -> clientResponse.bodyToMono(AppError.class).map(
                                 body -> {
-                                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.STATISTIC_NOT_FOUND)) {
-                                        log.error("Выполнен некорректный запрос к основному сервису: статистика не найдена");
-                                        return new CoreServiceIntegrationException("Выполнен некорректный запрос к основному сервису: статистика не найдена");
-                                    }
-                                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_IS_BROKEN)) {
-                                        log.error("Выполнен некорректный запрос к основному сервису: основной сервис сломан");
-                                        return new CoreServiceIntegrationException("Выполнен некорректный запрос к основному сервису: основной сервис сломан");
-                                    }
-                                    log.error("Выполнен некорректный запрос к основному сервису: причина неизвестна");
-                                    return new CoreServiceIntegrationException("Выполнен некорректный запрос к основному сервису: причина неизвестна");
+                                    log.error(body.getMessage());
+                                    return new ClientException(body.getMessage(), clientResponse.statusCode());
                                 }
                         )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError,
+                        clientResponse -> {
+                            throw new ServerException("Сервис заказов недоступен", clientResponse.statusCode());
+                        }
                 )
                 .bodyToMono(StringResponseRequestDto.class)
                 .block();
