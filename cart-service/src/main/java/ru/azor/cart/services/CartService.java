@@ -3,8 +3,10 @@ package ru.azor.cart.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.azor.api.core.ProductDto;
+import ru.azor.api.exceptions.ClientException;
 import ru.azor.cart.integrations.CoreServiceIntegration;
 import ru.azor.cart.models.Cart;
 
@@ -30,8 +32,9 @@ public class CartService {
     }
 
     public Cart getCurrentCart(String cartKey) {
-        if (!redisTemplate.hasKey(cartKey)) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(cartKey))) {
             redisTemplate.opsForValue().set(cartKey, new Cart());
+            throw new ClientException("Корзина не найдена", HttpStatus.NOT_FOUND);
         }
         return (Cart) redisTemplate.opsForValue().get(cartKey);
     }

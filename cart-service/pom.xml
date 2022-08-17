@@ -14,7 +14,7 @@
 
     <groupId>ru.azor</groupId>
     <artifactId>cart-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>cart-service</name>
     <description>Module for Educational Spring Web Rest Project</description>
 
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>ru.azor</groupId>
             <artifactId>api</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

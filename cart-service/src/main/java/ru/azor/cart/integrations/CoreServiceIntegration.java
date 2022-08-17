@@ -8,6 +8,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.azor.api.core.ProductDto;
+import ru.azor.api.exceptions.AppError;
+import ru.azor.api.exceptions.ClientException;
+import ru.azor.api.exceptions.ServerException;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -27,21 +30,19 @@ public class CoreServiceIntegration {
                 .header("productId", String.valueOf(id))
                 .retrieve()
                 .onStatus(
-                        HttpStatus::is4xxClientError, // HttpStatus::is4xxClientError
-                        clientResponse -> clientResponse.bodyToMono(CoreServiceAppError.class).map(
+                        HttpStatus::is4xxClientError,
+                        clientResponse -> clientResponse.bodyToMono(AppError.class).map(
                                 body -> {
-                                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.PRODUCT_NOT_FOUND)) {
-                                        log.error("Выполнен некорректный запрос к сервису продуктов: продукт не найден");
-                                        return new CoreServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: продукт не найден");
-                                    }
-                                    if (body.getCode().equals(CoreServiceAppError.CoreServiceErrors.CORE_SERVICE_IS_BROKEN)) {
-                                        log.error("Выполнен некорректный запрос к сервису продуктов: сервис сломан");
-                                        return new CoreServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: сервис сломан");
-                                    }
-                                    log.error("Выполнен некорректный запрос к сервису продуктов: причина неизвестна");
-                                    return new CoreServiceIntegrationException("Выполнен некорректный запрос к сервису продуктов: причина неизвестна");
+                                    log.error(body.getMessage());
+                                    return new ClientException(body.getMessage(), clientResponse.statusCode());
                                 }
                         )
+                )
+                .onStatus(
+                        HttpStatus::is5xxServerError,
+                        clientResponse -> {
+                            throw new ServerException("Сервис продуктов недоступен", clientResponse.statusCode());
+                        }
                 )
                 .bodyToMono(ProductDto.class)
                 .block();

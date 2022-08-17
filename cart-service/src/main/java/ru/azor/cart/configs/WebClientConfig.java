@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 import ru.azor.cart.properties.CoreServiceIntegrationProperties;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -20,23 +20,21 @@ import java.util.concurrent.TimeUnit;
         CoreServiceIntegrationProperties.class
 )
 @RequiredArgsConstructor
-public class AppConfig {
+public class WebClientConfig {
     private final CoreServiceIntegrationProperties coreServiceIntegrationProperties;
 
     @Bean
     public WebClient coreServiceWebClient() {
-        TcpClient tcpClient = TcpClient
-                .create()
+        HttpClient httpClient = reactor.netty.http.client.HttpClient.create()
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, coreServiceIntegrationProperties.getConnectTimeout())
-                .doOnConnected(connection -> {
-                    connection.addHandlerLast(new ReadTimeoutHandler(coreServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS));
-                    connection.addHandlerLast(new WriteTimeoutHandler(coreServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS));
-                });
-
+                .responseTimeout(Duration.ofMillis(coreServiceIntegrationProperties.getResponseTimeout()))
+                .doOnConnected(conn ->
+                        conn.addHandlerLast(new ReadTimeoutHandler(coreServiceIntegrationProperties.getReadTimeout(), TimeUnit.MILLISECONDS))
+                                .addHandlerLast(new WriteTimeoutHandler(coreServiceIntegrationProperties.getWriteTimeout(), TimeUnit.MILLISECONDS)));
         return WebClient
                 .builder()
                 .baseUrl(coreServiceIntegrationProperties.getUrl())
-                .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
+                .clientConnector(new ReactorClientHttpConnector(httpClient))
                 .build();
     }
 }

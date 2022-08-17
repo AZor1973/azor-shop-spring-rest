@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.carts.CartDto;
 import ru.azor.api.common.StringResponseRequestDto;
+import ru.azor.api.exceptions.AppError;
 import ru.azor.cart.converters.CartConverter;
 import ru.azor.cart.services.CartService;
 import ru.azor.cart.services.CartStatisticService;
@@ -18,7 +19,7 @@ import ru.azor.cart.services.CartStatisticService;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
-@RequestMapping("/api/v1/cart")
+@RequestMapping("/api/v1/carts")
 @RequiredArgsConstructor
 @Tag(name = "Корзина", description = "Методы работы с корзиной")
 public class CartsController {
@@ -32,6 +33,10 @@ public class CartsController {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
                             content = @Content(schema = @Schema(implementation = CartDto.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -47,6 +52,10 @@ public class CartsController {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
                             content = @Content(schema = @Schema(implementation = StringResponseRequestDto.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -60,6 +69,10 @@ public class CartsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -75,6 +88,10 @@ public class CartsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -90,6 +107,10 @@ public class CartsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -105,6 +126,10 @@ public class CartsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -120,6 +145,10 @@ public class CartsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -134,6 +163,10 @@ public class CartsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200"
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
@@ -159,6 +192,10 @@ public class CartsController {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
                             content = @Content(schema = @Schema(implementation = StringResponseRequestDto.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
                     )
             }
     )
