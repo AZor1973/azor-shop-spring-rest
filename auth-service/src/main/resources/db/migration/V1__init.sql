@@ -32,10 +32,3 @@ create table users_roles
     updated_at timestamp default current_timestamp,
     primary key (user_id, role_id)
 );
-
-
-
-
-
-
-

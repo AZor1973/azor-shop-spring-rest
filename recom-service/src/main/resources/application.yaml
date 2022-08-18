@@ -12,8 +12,10 @@ integrations:
     connect-timeout: 2000
     read-timeout: 10000
     write-timeout: 2000
+    response-timeout: 2000
   core-service:
     url: http://localhost:5555/core
     connect-timeout: 2000
     read-timeout: 10000
     write-timeout: 2000
+    response-timeout: 2000

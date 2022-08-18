@@ -19,12 +19,6 @@
             <td>{{item.pricePerProduct + ' x ' + item.quantity + ' = ' + item.price}}</td>
             <td>
                 <button class="btn btn-danger" ng-click="deleteCartItemFromCart(item.productId)">Удалить</button>
-
-<!--                <form ng-click="deleteCartItemFromCart(item.productId)">-->
-<!--                    <input type="hidden" ng-model="_method" value="DELETE"/>-->
-<!--                    <input class="btn btn-danger" type="submit" value="Удалить">-->
-<!--                </form>-->
-
             </td>
         </tr>
         <tr>
@@ -41,13 +35,19 @@
     <p></p>
     <h3>Детали заказа</h3>
     <form novalidate>
+        <input class="form-control" type="text" placeholder="Ф.И.О. получателя" ng-model="orderDetails.full_name">
+        <p></p>
         <input class="form-control" type="text" placeholder="Номер телефона получателя" ng-model="orderDetails.phone">
         <p></p>
         <input class="form-control" type="text" placeholder="Адрес доставки" ng-model="orderDetails.address">
         <p></p>
-        <span id="response"></span>
+        <span id="successResponse"></span>
+        <span id="response" ng-repeat="error in errors">
+            {{error.defaultMessage}}
+            <br>
+        </span>
     </form>
-
+<br>
     <button class="btn btn-primary" ng-click="checkOut()" ng-show="isUserLoggedIn() && cart.items.length > 0">Оформить заказ</button>
     <button class="btn btn-secondary" ng-click="disabledCheckOut()" ng-show="!isUserLoggedIn() && cart.items.length > 0">Оформить заказ</button>
 </div>

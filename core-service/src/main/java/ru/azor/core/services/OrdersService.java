@@ -16,10 +16,7 @@ import ru.azor.core.entities.OrderItem;
 import ru.azor.core.integrations.CartServiceIntegration;
 import ru.azor.core.repositories.OrdersRepository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,11 +30,16 @@ public class OrdersService {
 
 
     public Order save(String username, OrderDetailsDto orderDetailsDto, BindingResult bindingResult) {
-        if (username == null || orderDetailsDto == null) {
-            throw new ClientException("Невалидные параметры", HttpStatus.BAD_REQUEST);
+        if (username == null) {
+            throw new ClientException("Невалидный параметр: username", HttpStatus.BAD_REQUEST);
         }
         if (bindingResult.hasErrors()) {
             List<ObjectError> errors = bindingResult.getAllErrors();
+            System.out.println(bindingResult.getModel());
+            for (ObjectError error : errors) {
+                System.out.println(error);
+                System.out.println(error.getDefaultMessage());
+            }
             throw new ValidationException("Ошибка валидации", errors, HttpStatus.BAD_REQUEST);
         }
         CartDto currentCart = cartServiceIntegration.getUserCart(username);

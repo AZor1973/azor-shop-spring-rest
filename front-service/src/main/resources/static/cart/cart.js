@@ -3,7 +3,7 @@ angular.module('market-front').controller('cartController', function ($scope, $h
 
     $scope.loadCart = function () {
         $http({
-            url: contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId,
+            url: contextPath + 'api/v1/carts/' + $localStorage.springWebGuestCartId,
             method: 'GET'
         }).then(function (response) {
             $scope.cart = response.data;
@@ -15,7 +15,7 @@ angular.module('market-front').controller('cartController', function ($scope, $h
     }
 
     $scope.clearCart = function () {
-        $http.get(contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId + '/clear')
+        $http.get(contextPath + 'api/v1/carts/' + $localStorage.springWebGuestCartId + '/clear')
             .then(function (response) {
                 $scope.loadCart();
             });
@@ -27,33 +27,31 @@ angular.module('market-front').controller('cartController', function ($scope, $h
             method: 'POST',
             data: $scope.orderDetails
         }).then(function successCallback(response) {
-            console.log("log: " + response.data.value)
             $scope.loadCart();
-            document.getElementById('response').innerHTML = response.data.value;
+            document.getElementById('successResponse').innerHTML = response.data.order_status;
             $scope.orderDetails = null
         }, function errorCallback(response) {
-            console.log("log: " + response.data.value)
             $scope.loadCart();
-            document.getElementById('response').innerHTML = response.data.value;
+            $scope.errors = response.data.list;
         });
     };
 
     $scope.decrementQuantityOfCartItem = function (productId) {
-        $http.get(contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId + '/decrement/' + productId)
+        $http.get(contextPath + 'api/v1/carts/' + $localStorage.springWebGuestCartId + '/decrement/' + productId)
             .then(function (response) {
                 $scope.loadCart();
             });
     }
 
     $scope.incrementQuantityOfCartItem = function (productId) {
-        $http.get(contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId + '/increment/' + productId)
+        $http.get(contextPath + 'api/v1/carts/' + $localStorage.springWebGuestCartId + '/increment/' + productId)
             .then(function (response) {
                 $scope.loadCart();
             });
     }
 
     $scope.deleteCartItemFromCart = function (productId) {
-        $http.get(contextPath + 'api/v1/cart/' + $localStorage.springWebGuestCartId + '/remove/' + productId)
+        $http.get(contextPath + 'api/v1/carts/' + $localStorage.springWebGuestCartId + '/remove/' + productId)
             .then(function (response) {
                 $scope.loadCart();
             });

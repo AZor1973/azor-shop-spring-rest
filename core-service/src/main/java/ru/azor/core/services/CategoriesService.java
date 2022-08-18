@@ -18,6 +18,7 @@ import ru.azor.core.repositories.CategoriesRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -26,9 +27,15 @@ public class CategoriesService {
     private final CategoriesRepository categoriesRepository;
     private final ProductConverter productConverter;
 
-    public Page<Category> findAll(Integer page, Integer pageSize) {
+    public Page<Category> getPage(Integer page, Integer pageSize) {
         Page<Category> categories = categoriesRepository.findAll(PageRequest.of(page - 1, pageSize));
         log.info("Search: " + categories.getTotalElements() + " categories");
+        return categories;
+    }
+
+    public List<Category> findAll(){
+        List<Category> categories = categoriesRepository.findAll();
+        log.info("Find all categories: " + categories.size());
         return categories;
     }
 

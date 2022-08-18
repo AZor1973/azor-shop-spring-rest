@@ -14,6 +14,7 @@ import ru.azor.api.core.ProductDto;
 import ru.azor.recom.services.RecommendationService;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/recom")
@@ -34,7 +35,7 @@ public class RecommendationController {
             }
     )
     @GetMapping("/daily")
-    public List<ProductDto> getDailyStatistic() {
+    public Set<ProductDto> getDailyStatistic() {
         return recommendationService.getStatisticFromCartService(quantity);
     }
 
@@ -48,7 +49,7 @@ public class RecommendationController {
             }
     )
     @GetMapping("/monthly")
-    public List<ProductDto> getMonthlyStatistic() {
+    public Set<ProductDto> getMonthlyStatistic() {
         return recommendationService.getStatisticFromCoreService(quantity);
     }
 }

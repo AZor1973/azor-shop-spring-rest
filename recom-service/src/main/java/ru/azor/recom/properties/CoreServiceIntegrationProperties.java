@@ -12,4 +12,5 @@ public class CoreServiceIntegrationProperties {
     private Integer connectTimeout;
     private Integer readTimeout;
     private Integer writeTimeout;
+    private Integer responseTimeout;
 }

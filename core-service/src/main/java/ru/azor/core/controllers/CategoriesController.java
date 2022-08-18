@@ -20,6 +20,8 @@ import ru.azor.core.entities.Category;
 import ru.azor.core.services.CategoriesService;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/categories")
@@ -43,16 +45,36 @@ public class CategoriesController {
                     )
             }
     )
-    @GetMapping
-    public Page<CategoryDto> getAll(
+    @GetMapping("/page")
+    public Page<CategoryDto> getPage(
             @RequestParam(name = "p", defaultValue = "1") Integer page,
             @RequestParam(name = "page_size", defaultValue = "9") Integer pageSize) {
         if (page < 1) {
             page = 1;
         }
-        return categoriesService.findAll(page, pageSize).map(
+        return categoriesService.getPage(page, pageSize).map(
                 productConverter::categoryToCategoryDto
         );
+    }
+
+    @Operation(
+            summary = "Запрос на получение списка категорий",
+            responses = {
+                    @ApiResponse(
+                            description = "Успешный ответ", responseCode = "200",
+                            content = @Content(schema = @Schema(implementation = List.class))
+                    ),
+                    @ApiResponse(
+                            description = "Ошибка", responseCode = "4XX",
+                            content = @Content(schema = @Schema(implementation = AppError.class))
+                    )
+            }
+    )
+    @GetMapping
+    public List<CategoryDto> getAll() {
+        return categoriesService.findAll().stream().map(
+                productConverter::categoryToCategoryDto
+        ).collect(Collectors.toList());
     }
 
     @Operation(

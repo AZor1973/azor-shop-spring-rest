@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -13,7 +14,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Модель продукта")
-public class ProductDto {
+public class ProductDto implements Serializable {
+    private static final long serialVersionUID = -5488232298642258760L;
     @Schema(description = "ID продукта", required = true, example = "1")
     private Long id;
     @NotBlank(message = "Поле названия продукта не должно быть пустым")

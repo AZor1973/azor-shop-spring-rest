@@ -22,21 +22,17 @@
                            ng-click="cleanResponse()">
                 </label>
                 <label>Категории
-                    <div ng-repeat="c in categoriesSet">
-                        <input type="checkbox">
-                        {{ c.title }}
-                    </div>
-
-
-<!--                    <input class="form-control" type="text" placeholder="Категории" ng-model="productDto.categories"-->
-<!--                           ng-click="cleanResponse()">-->
-<!--                    <div ng-repeat="c in categoriesSet">-->
-<!--                        {{c.title}}-->
-<!--                    </div>-->
+                    <select class="form-control" ng-model="newProductCategory"
+                            ng-options="c.title for c in categoriesSet">
+                    </select>
                 </label>
                 <p></p>
-                <span id="response"></span>
+                <span id="response" ng-repeat="error in errors">
+                          {{error.defaultMessage}}
+                          <br>
+                </span>
                 <span id="message"></span>
+                <span id="successResponse"></span>
                 <p></p>
                 <button class="btn btn-primary" ng-click="createProductDto()">Создать продукт</button>
             </form>

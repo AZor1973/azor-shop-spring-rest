@@ -6,15 +6,16 @@ angular.module('market-front').controller('adminController', function ($scope, $
     $scope.isUserListAccessible = false;
     $scope.isUserFormAccessible = false;
     $scope.isCategoryFormAccessible = false;
-    $scope.productDto = null;
+    $scope.productDto = {title: '', price: 0, categories: []};
     $scope.profileDto = null;
+    $scope.newProductCategory = null;
     $scope.newRoles = new Set();
 
     $scope.showProductForm = function () {
         if ($scope.isUserHasAdminRole()) {
             if ($scope.isProductFormAccessible === false) {
                 $scope.isProductFormAccessible = true;
-                $http.get(contextCorePath + '/api/v1/categories')
+                $http.get(contextCorePath + 'api/v1/categories')
                     .then(function successCallback(response) {
                         $scope.categoriesSet = response.data;
                     });
@@ -44,7 +45,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
 
                 $scope.isUserListAccessible = true;
 
-                $http.get(contextAuthPath + '/api/v1/profile')
+                $http.get(contextAuthPath + 'api/v1/profile')
                     .then(function successCallback(response) {
                         $scope.usersList = response.data;
                     });
@@ -60,7 +61,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
         if ($scope.isUserHasAdminRole()) {
             if ($scope.isUserFormAccessible === false) {
                 $scope.isUserFormAccessible = true;
-                $http.get(contextAuthPath + '/api/v1/roles')
+                $http.get(contextAuthPath + 'api/v1/roles')
                     .then(function successCallback(response) {
                         $scope.rolesSet = response.data;
                     });
@@ -84,7 +85,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
         }
         $scope.roles = Array.from($scope.newRoles).join(',');
         $http({
-            url: contextAuthPath + '/api/v1/profile',
+            url: contextAuthPath + 'api/v1/profile',
             method: 'PUT',
             data: $scope.profileDto,
             headers: {'roles': $scope.roles}
@@ -102,24 +103,23 @@ angular.module('market-front').controller('adminController', function ($scope, $
 
     $scope.createProductDto = function () {
         console.log($scope.productDto);
+        $scope.productDto.categories[0] = $scope.newProductCategory;
         $http({
-            url: contextCorePath + '/api/v1/products',
+            url: contextCorePath + 'api/v1/products',
             method: 'POST',
             data: $scope.productDto,
         })
             .then(function successCallback(response) {
-                if (response.data.value === "Новый продукт создан") {
-                    document.getElementById('response').innerHTML = response.data.value;
-                    $scope.productDto = null;
-                }
+                document.getElementById('successResponse').innerHTML = response.data.title + ' created';
+                $scope.productDto = null;
             }, function errorCallback(response) {
-                document.getElementById('response').innerHTML = response.data.value;
+                $scope.errors = response.data.list;
             });
     };
 
     $scope.createCategoryDto = function () {
         $http({
-            url: contextCorePath + '/api/v1/categories',
+            url: contextCorePath + 'api/v1/categories',
             method: 'POST',
             data: $scope.categoryDto,
         })
@@ -142,6 +142,6 @@ angular.module('market-front').controller('adminController', function ($scope, $
     }
 
     $scope.cleanResponse = function () {
-        document.getElementById('response').innerHTML = '';
+        document.getElementById('successResponse').innerHTML = '';
     }
 });

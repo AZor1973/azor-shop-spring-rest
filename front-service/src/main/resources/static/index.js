@@ -62,7 +62,7 @@
             }
         }
         if (!$localStorage.springWebGuestCartId) {
-            $http.get('http://localhost:5555/cart/api/v1/cart/generate')
+            $http.get('http://localhost:5555/cart/api/v1/carts/generate')
                 .then(function successCallback(response) {
                     $localStorage.springWebGuestCartId = response.data.value;
                 });
@@ -84,7 +84,7 @@ angular.module('market-front').controller('indexController', function ($rootScop
                     $scope.user.username = null;
                     $scope.user.password = null;
 
-                    $http.get('http://localhost:5555/cart/api/v1/cart/' + $localStorage.springWebGuestCartId + '/merge')
+                    $http.get('http://localhost:5555/cart/api/v1/carts/' + $localStorage.springWebGuestCartId + '/merge')
                         .then(function successCallback(response) {
                         });
 

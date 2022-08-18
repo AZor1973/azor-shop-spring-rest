@@ -11,11 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.carts.CartDto;
 import ru.azor.api.common.StringResponseRequestDto;
+import ru.azor.api.core.ProductDto;
 import ru.azor.api.exceptions.AppError;
 import ru.azor.cart.converters.CartConverter;
 import ru.azor.cart.services.CartService;
 import ru.azor.cart.services.CartStatisticService;
 
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
@@ -200,10 +202,7 @@ public class CartsController {
             }
     )
     @GetMapping("/stat/{quantity}")
-    public StringResponseRequestDto getStatistic(@PathVariable @Parameter(description = "Диапазон отбора статистики", required = true) Integer quantity) {
-        return StringResponseRequestDto.builder()
-                .list(new CopyOnWriteArrayList<>(cartStatisticService.getRangeStatistic(quantity).keySet()))
-                .httpStatus(HttpStatus.OK)
-                .build();
+    public Set<ProductDto> getStatistic(@PathVariable @Parameter(description = "Диапазон отбора статистики", required = true) Integer quantity) {
+        return cartStatisticService.getRangeStatistic(quantity).keySet();
     }
 }

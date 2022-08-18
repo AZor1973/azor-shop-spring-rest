@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.exceptions.AppError;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.api.exceptions.ServerException;
+
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -16,7 +17,7 @@ import ru.azor.api.exceptions.ServerException;
 public class CoreServiceIntegration {
     private final WebClient coreServiceWebClient;
 
-    public StringResponseRequestDto getStatisticFromCoreService(Integer quantity) {
+    public Set<?> getStatisticFromCoreService(Integer quantity) {
         return coreServiceWebClient.get()
                 .uri("/api/v1/orders/stat/" + quantity)
                 .retrieve()
@@ -35,7 +36,7 @@ public class CoreServiceIntegration {
                             throw new ServerException("Сервис заказов недоступен", clientResponse.statusCode());
                         }
                 )
-                .bodyToMono(StringResponseRequestDto.class)
+                .bodyToMono(Set.class)
                 .block();
     }
 }

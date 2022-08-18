@@ -1,5 +1,6 @@
 package ru.azor.api.core;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class OrderDto {
     private String address;
     @Schema(description = "Телефон получателя", required = true, example = "222-22-22")
     private String phone;
+    @JsonProperty("order_status")
     @Schema(description = "Статус заказа", required = true, example = "CREATED")
     private OrderStatus orderStatus;
 }

@@ -14,7 +14,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Модель категории продукта")
-public class CategoryDto{
+public class CategoryDto implements Serializable{
+    private static final long serialVersionUID = -6932860765653370481L;
     @Schema(description = "ID категории", required = true, example = "1")
     private Long id;
     @NotBlank(message = "Поле названия категории не должно быть пустым")

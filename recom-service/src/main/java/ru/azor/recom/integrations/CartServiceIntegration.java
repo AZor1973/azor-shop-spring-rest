@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import ru.azor.api.common.StringResponseRequestDto;
 import ru.azor.api.exceptions.AppError;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.api.exceptions.ServerException;
+
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -16,7 +17,7 @@ import ru.azor.api.exceptions.ServerException;
 public class CartServiceIntegration {
     private final WebClient cartServiceWebClient;
 
-    public StringResponseRequestDto getStatisticFromCartService(Integer quantity) {
+    public Set<?> getStatisticFromCartService(Integer quantity) {
         return cartServiceWebClient.get()
                 .uri("/api/v1/carts/stat/" + quantity)
                 .retrieve()
@@ -35,7 +36,7 @@ public class CartServiceIntegration {
                             throw new ServerException("Сервис корзины недоступен", clientResponse.statusCode());
                         }
                 )
-                .bodyToMono(StringResponseRequestDto.class)
+                .bodyToMono(Set.class)
                 .block();
     }
 }

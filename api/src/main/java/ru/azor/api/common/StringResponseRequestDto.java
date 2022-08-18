@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -14,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Schema(description = "Модель запрса/ответа")
-public class StringResponseRequestDto {
+public class StringResponseRequestDto implements Serializable {
+    private static final long serialVersionUID = -6102204582573842717L;
     @Schema(description = "Служебное строковое поле", required = true, example = "Example")
     private String value;
     @Schema(description = "Служебное строковое поле", required = true, example = "Example")
