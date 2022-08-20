@@ -22,9 +22,14 @@
                            ng-click="cleanResponse()">
                 </label>
                 <label>Категории
-                    <select class="form-control" ng-model="productCategory"
-                            ng-options="c.title for c in categoriesSet">
-                    </select>
+<!--                    <select class="form-control" ng-model="productCategory"-->
+<!--                            ng-options="c.title for c in categoriesSet">-->
+<!--                    </select>-->
+
+                    <div ng-repeat="c in categoriesSet">
+                        <input type="checkbox" id="{{c.id}}" ng-click="addCategory(c)">
+                        {{c.title}}
+                    </div>
                 </label>
                 <p></p>
                 <span id="errors" ng-repeat="error in errors">

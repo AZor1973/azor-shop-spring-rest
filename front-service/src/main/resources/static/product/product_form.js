@@ -2,7 +2,8 @@ angular.module('market-front').controller('productFormController', function ($sc
     const contextPath = 'http://localhost:5555/core/';
 
     $scope.productDto = {title: '', price: 0, categories: []};
-    $scope.productCategory = null;
+    // $scope.productCategory = null;
+    $scope.newCategories = new Set();
 
     $scope.showProductForm = function () {
         $scope.productId = document.URL.substr(document.URL.lastIndexOf('/') + 1);
@@ -19,8 +20,11 @@ angular.module('market-front').controller('productFormController', function ($sc
     };
 
     $scope.setProductDto = function () {
-        $scope.productDto.categories[0] = $scope.productCategory;
-        console.log($scope.productDto);
+        $scope.size = 0;
+        $scope.newCategories.forEach(function(entry) {
+            $scope.productDto.categories[$scope.size] = entry;
+            $scope.size ++;
+        });
         $http({
             url: contextPath + '/api/v1/products',
             method: 'PUT',
@@ -29,9 +33,19 @@ angular.module('market-front').controller('productFormController', function ($sc
             .then(function successCallback(response) {
                 document.getElementById('updateProductResponse').innerHTML = response.data.title + ' updated';
                 $scope.errors = null;
+                $scope.newCategories.clear();
             }, function errorCallback(response) {
                 $scope.errors = response.data.list;
             });
+    };
+
+    $scope.addCategory = function (category) {
+        $scope.productDto.categories = [];
+        if ($scope.newCategories.has(category)) {
+            $scope.newCategories.delete(category);
+        } else {
+            $scope.newCategories.add(category);
+        }
     };
 
     $scope.cleanResponse = function () {
