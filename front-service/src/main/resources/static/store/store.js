@@ -55,6 +55,15 @@ angular.module('market-front').controller('storeController', function ($scope, $
         $location.path('/product_form/' + productId);
     }
 
+    $scope.deleteProduct = function (productId) {
+        if(confirm('The product ' + productId + ' wil be removed. Are you sure?')){
+            $http.delete(contextPath + 'api/v1/products/' + productId)
+                .then(function (response) {
+                    $scope.loadProducts();
+                });
+        }
+    }
+
     $scope.loadDailyRecommendations();
     $scope.loadMonthlyRecommendations();
     $scope.loadProducts();

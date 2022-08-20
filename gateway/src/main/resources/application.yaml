@@ -15,6 +15,7 @@ spring:
               - POST
               - PUT
               - PATCH
+              - DELETE
             allowedHeaders: "*"
       routes:
         - id: core-service

@@ -84,6 +84,9 @@ public class ProductsService {
         if (productDto == null) {
             throw new ClientException("Невалидный параметр 'productDto': null", HttpStatus.BAD_REQUEST);
         }
+        if (productDto.getCategories().contains(null)){
+            bindingResult.addError(new ObjectError("productDto", "Должна быть выбрана хотя бы одна категория"));
+        }
         if (bindingResult.hasErrors()) {
             List<ObjectError> errors = bindingResult.getAllErrors();
             throw new ValidationException("Ошибка валидации", errors, HttpStatus.BAD_REQUEST);

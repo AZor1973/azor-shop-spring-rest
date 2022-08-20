@@ -31,9 +31,6 @@
                 </div>
                 <p></p>
                 <button class="btn btn-outline-warning btn-sm" style="width: 100%;" type="submit">Применить</button>
-                <!--                <tr ng-repeat="p in recomList">-->
-                <!--                    <td>{{p.title}}</td>-->
-                <!--                </tr>-->
             </form>
             <h4>Товар дня</h4>
             <p></p>
@@ -69,6 +66,9 @@
                     </td>
                     <td>
                         <button class="btn btn-primary" ng-click="goToProductForm(p.id)" ng-show="isUserHasAdminRole()">Редактировать</button>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" ng-click="deleteProduct(p.id)" ng-show="isUserHasAdminRole()">Удалить</button>
                     </td>
                 </tr>
                 </tbody>

@@ -22,17 +22,16 @@
                            ng-click="cleanResponse()">
                 </label>
                 <label>Категории
-                    <select class="form-control" ng-model="newProductCategory"
+                    <select class="form-control" ng-model="productCategory"
                             ng-options="c.title for c in categoriesSet">
                     </select>
                 </label>
                 <p></p>
-                <span id="response" ng-repeat="error in errors">
+                <span id="errors" ng-repeat="error in errors">
                           {{error.defaultMessage}}
                           <br>
                 </span>
-                <span id="message"></span>
-                <span id="successResponse"></span>
+                <span id="newProductResponse"></span>
                 <p></p>
                 <button class="btn btn-primary" ng-click="createProductDto()">Создать продукт</button>
             </form>

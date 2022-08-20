@@ -104,7 +104,7 @@ public class ProductsController {
             responses = {
                     @ApiResponse(
                             description = "Успешный ответ", responseCode = "200",
-                            content = @Content(schema = @Schema(implementation = ProductDto.class))
+                            content = @Content(schema = @Schema(implementation = ResponseEntity.class))
                     ),
                     @ApiResponse(
                             description = "Ошибка", responseCode = "4XX",
@@ -113,9 +113,10 @@ public class ProductsController {
             }
     )
     @PutMapping
-    public ProductDto update(@RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto,
+    public ResponseEntity<?> update(@RequestBody @Parameter(description = "Изменённый продукт", required = true) @Valid ProductDto productDto,
                              @Parameter(description = "Ошибки валидации", required = true) BindingResult bindingResult) {
-        return productConverter.entityToDto(productsService.tryToSave(productDto, bindingResult));
+        Product product = productsService.tryToSave(productDto, bindingResult);
+        return new ResponseEntity<>(productConverter.entityToDto(product), HttpStatus.OK);
     }
 
     @Operation(

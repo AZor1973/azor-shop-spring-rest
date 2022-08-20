@@ -19,15 +19,16 @@
                            ng-click="cleanResponse()">
                 </label>
                 <label>Категории
-                    <input class="form-control" type="text" placeholder="Категории" ng-model="productDto.categories"
-                           ng-click="cleanResponse()">
-                    <div ng-repeat="c in categoriesSet">
-                        {{c.title}}
-                    </div>
+                    <select class="form-control" ng-model="productCategory"
+                            ng-options="c.title for c in categoriesSet">
+                    </select>
                 </label>
                 <p></p>
-                <span id="response"></span>
-                <span id="message"></span>
+                <span id="errors" ng-repeat="error in errors">
+                          {{error.defaultMessage}}
+                          <br>
+                </span>
+                <span id="updateProductResponse"></span>
                 <p></p>
                 <button class="btn btn-primary" ng-click="setProductDto()">Редактировать продукт</button>
             </form>

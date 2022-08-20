@@ -8,7 +8,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
     $scope.isCategoryFormAccessible = false;
     $scope.productDto = {title: '', price: 0, categories: []};
     $scope.profileDto = null;
-    $scope.newProductCategory = null;
+    $scope.productCategory = null;
     $scope.newRoles = new Set();
 
     $scope.showProductForm = function () {
@@ -45,7 +45,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
 
                 $scope.isUserListAccessible = true;
 
-                $http.get(contextAuthPath + 'api/v1/profile')
+                $http.get(contextAuthPath + 'api/v1/profiles')
                     .then(function successCallback(response) {
                         $scope.usersList = response.data;
                     });
@@ -55,7 +55,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
         } else {
             alert('Недостаточно прав')
         }
-    }
+    };
 
     $scope.showUserForm = function () {
         if ($scope.isUserHasAdminRole()) {
@@ -72,11 +72,28 @@ angular.module('market-front').controller('adminController', function ($scope, $
         } else {
             alert('Недостаточно прав')
         }
-    }
+    };
 
-    $scope.goToStore = function () {
+    $scope.createProductDto = function () {
+        console.log($scope.productDto);
+        $scope.productDto.categories[0] = $scope.productCategory;
+        $http({
+            url: contextCorePath + 'api/v1/products',
+            method: 'POST',
+            data: $scope.productDto,
+        })
+            .then(function successCallback(response) {
+                document.getElementById('newProductResponse').innerHTML = response.data.title + ' created';
+                $scope.productDto = null;
+                $scope.errors = null;
+            }, function errorCallback(response) {
+                $scope.errors = response.data.list;
+            });
+    };
+
+        $scope.goToStore = function () {
         $location.path('/store');
-    }
+    };
 
     $scope.updateProfileDto = function () {
         if ($scope.newRoles.size === 0) {
@@ -85,7 +102,7 @@ angular.module('market-front').controller('adminController', function ($scope, $
         }
         $scope.roles = Array.from($scope.newRoles).join(',');
         $http({
-            url: contextAuthPath + 'api/v1/profile',
+            url: contextAuthPath + 'api/v1/profiles',
             method: 'PUT',
             data: $scope.profileDto,
             headers: {'roles': $scope.roles}
@@ -101,21 +118,6 @@ angular.module('market-front').controller('adminController', function ($scope, $
             });
     }
 
-    $scope.createProductDto = function () {
-        console.log($scope.productDto);
-        $scope.productDto.categories[0] = $scope.newProductCategory;
-        $http({
-            url: contextCorePath + 'api/v1/products',
-            method: 'POST',
-            data: $scope.productDto,
-        })
-            .then(function successCallback(response) {
-                document.getElementById('successResponse').innerHTML = response.data.title + ' created';
-                $scope.productDto = null;
-            }, function errorCallback(response) {
-                $scope.errors = response.data.list;
-            });
-    };
 
     $scope.createCategoryDto = function () {
         $http({

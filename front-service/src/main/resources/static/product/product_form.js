@@ -1,7 +1,8 @@
 angular.module('market-front').controller('productFormController', function ($scope, $http, $location, $localStorage) {
     const contextPath = 'http://localhost:5555/core/';
 
-    $scope.productDto = null;
+    $scope.productDto = {title: '', price: 0, categories: []};
+    $scope.productCategory = null;
 
     $scope.showProductForm = function () {
         $scope.productId = document.URL.substr(document.URL.lastIndexOf('/') + 1);
@@ -18,23 +19,23 @@ angular.module('market-front').controller('productFormController', function ($sc
     };
 
     $scope.setProductDto = function () {
+        $scope.productDto.categories[0] = $scope.productCategory;
+        console.log($scope.productDto);
         $http({
             url: contextPath + '/api/v1/products',
             method: 'PUT',
             data: $scope.productDto,
         })
             .then(function successCallback(response) {
-                if (response.data.value === "Продукт изменён") {
-                    document.getElementById('response').innerHTML = response.data.value;
-                    $scope.productDto = null;
-                }
+                document.getElementById('updateProductResponse').innerHTML = response.data.title + ' updated';
+                $scope.errors = null;
             }, function errorCallback(response) {
-                document.getElementById('response').innerHTML = response.data.value;
+                $scope.errors = response.data.list;
             });
     };
 
     $scope.cleanResponse = function () {
-        document.getElementById('response').innerHTML = '';
+        document.getElementById('updateProductResponse').innerHTML = '';
     }
 
     $scope.showProductForm();

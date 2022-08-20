@@ -23,11 +23,11 @@ public class ProductDto implements Serializable {
     @Schema(description = "Название продукта", required = true, maxLength = 255, minLength = 3, example = "Коробка конфет")
     private String title;
     @NotNull(message = "Поле цены продукта не должно быть пустым")
-    @DecimalMin(value = "0.0", inclusive = false)
-    @Digits(integer = 10, fraction = 2)
+    @DecimalMin(value = "0.0", inclusive = false, message = "Цена продукта не должна быть 0.0")
+    @Digits(integer = 10, fraction = 2, message = "Поле цены продукта не должно быть пустым")
     @Schema(description = "Цена продукта", required = true, example = "120.00")
     private BigDecimal price;
+    @NotEmpty(message = "Должна быть выбрана хотя бы одна категория")
     @Schema(description = "Категории продукта", required = true, example = "{Молочные продукты, Скоропортящиеся товары}")
-//    @JsonDeserialize(using = SetCategoryDtoDeserializer.class)
     private Set<CategoryDto> categories;
 }
