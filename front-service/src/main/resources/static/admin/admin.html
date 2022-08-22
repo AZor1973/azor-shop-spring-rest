@@ -22,9 +22,9 @@
                            ng-click="cleanResponse()">
                 </label>
                 <label>Категории
-<!--                    <select class="form-control" ng-model="productCategory"-->
-<!--                            ng-options="c.title for c in categoriesSet">-->
-<!--                    </select>-->
+                    <!--                    <select class="form-control" ng-model="productCategory"-->
+                    <!--                            ng-options="c.title for c in categoriesSet">-->
+                    <!--                    </select>-->
 
                     <div ng-repeat="c in categoriesSet">
                         <input type="checkbox" id="{{c.id}}" ng-click="addCategory(c)">
@@ -32,7 +32,7 @@
                     </div>
                 </label>
                 <p></p>
-                <span id="errors" ng-repeat="error in errors">
+                <span id="productErrors" ng-repeat="error in errors">
                           {{error.defaultMessage}}
                           <br>
                 </span>
@@ -52,7 +52,11 @@
                            ng-click="cleanResponse()">
                 </label>
                 <p></p>
-                <span id="response3"></span>
+                <span id="categoryErrors" ng-repeat="error in errors">
+                          {{error.defaultMessage}}
+                          <br>
+                </span>
+                <span id="newCategoryResponse"></span>
                 <p></p>
                 <button class="btn btn-primary" ng-click="createCategoryDto()">Создать категорию</button>
             </form>
@@ -66,15 +70,12 @@
                     {{u.id}}
                     {{u.username}}
                     {{u.status}}
-                    <label>Роли
-                        <div ng-repeat="r in u.roles">
-                            {{r.name}}
-                        </div>
-                    </label>
-                    <button class="btn btn-primary" ng-click="showUserForm()">Редактировать</button>
+                    <div ng-repeat="r in u.rolesDto">
+                        {{r.name}}
+                    </div>
+                    <button class="btn btn-primary" ng-click="showUserForm(u.id)">Редактировать</button>
 
-                    <form ng-show="isUserFormAccessible">
-                        <input class="form-control" type="hidden" value="u.id" ng-model="profileDto.id">
+                    <form ng-show="isUserFormAccessible(userId, u.id)">
                         <div>
                             <label>Статус
                                 <div>
@@ -91,18 +92,24 @@
                             </label>
                             <label>Роли
                                 <div ng-repeat="r in rolesSet">
-                                    <label><input type="checkbox" id="{{r.name}}" ng-click="addRole(r.name)"></label>
+                                    <input type="checkbox" id="{{r.id}}" ng-click="addRole(r)">
                                     {{r.name}}
                                 </div>
                             </label>
                         </div>
                         <p></p>
                     </form>
-                    <span id="response2"></span>
-                    <span id="message2"></span>
+                </div>
+                <div>
+                    <p></p>
+                    <span id="profileErrors" ng-repeat="error in errors">
+                          {{error.defaultMessage}}
+                          <br>
+                    </span>
+                    <span id="updateProfileResponse"></span>
+                    <p></p>
                 </div>
             </div>
-
         </div>
     </div>
 </div>

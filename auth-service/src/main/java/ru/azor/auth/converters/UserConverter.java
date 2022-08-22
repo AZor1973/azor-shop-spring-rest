@@ -51,32 +51,11 @@ public class UserConverter {
                 .build();
     }
 
-    public User profileDtoToUser(ProfileDto profileDto) {
-        return User.builder()
-                .username(profileDto.getUsername())
-                .firstname(profileDto.getFirstname())
-                .lastname(profileDto.getLastname())
-                .email(profileDto.getEmail())
-                .phone(profileDto.getPhone())
-                .status(profileDto.getStatus())
-                .roles(rolesDtoToRoles(profileDto.getRolesDto()))
-                .build();
-    }
-
-    public Role roleDtoToRole(RoleDto roleDto){
-        return Role.builder()
-                .name(roleDto.getName())
-                .build();
-    }
-
     public RoleDto roleToRoleDto(Role role){
         return RoleDto.builder()
+                .id(role.getId())
                 .name(role.getName())
                 .build();
-    }
-
-    public Set<Role> rolesDtoToRoles(Set<RoleDto> roles){
-        return roles.stream().map(this::roleDtoToRole).collect(Collectors.toSet());
     }
 
     public Set<RoleDto> rolesToRolesDto(Set<Role> roles){

@@ -4,11 +4,10 @@ angular.module('market-front').controller('adminController', function ($scope, $
 
     $scope.isProductFormAccessible = false;
     $scope.isUserListAccessible = false;
-    $scope.isUserFormAccessible = false;
+    $scope.userId = null;
     $scope.isCategoryFormAccessible = false;
     $scope.productDto = {title: '', price: 0, categories: []};
-    $scope.profileDto = null;
-    // $scope.productCategory = null;
+    $scope.profileDto = {id: 0, status: null, rolesDto: []};
     $scope.newRoles = new Set();
     $scope.newCategories = new Set();
 
@@ -52,35 +51,38 @@ angular.module('market-front').controller('adminController', function ($scope, $
                     });
             } else {
                 $scope.isUserListAccessible = false;
+                $scope.cleanResponse();
             }
         } else {
             alert('Недостаточно прав')
         }
     };
 
-    $scope.showUserForm = function () {
+    $scope.showUserForm = function (currentId) {
         if ($scope.isUserHasAdminRole()) {
-            if ($scope.isUserFormAccessible === false) {
-                $scope.isUserFormAccessible = true;
+            if ($scope.userId === null) {
+                $scope.cleanResponse();
+                $scope.userId = currentId;
                 $http.get(contextAuthPath + 'api/v1/roles')
                     .then(function successCallback(response) {
                         $scope.rolesSet = response.data;
                     });
             } else {
-                $scope.isUserFormAccessible = false;
                 $scope.updateProfileDto();
+                $scope.userId = null;
             }
         } else {
             alert('Недостаточно прав')
         }
     };
 
+    $scope.isUserFormAccessible = function (userId, currentId) {
+        return userId === currentId;
+    }
+
     $scope.createProductDto = function () {
         $scope.size = 0;
-        $scope.newCategories.forEach(function(entry) {
-            $scope.productDto.categories[$scope.size] = entry;
-            $scope.size ++;
-        });
+        $scope.productDto.categories = Array.from($scope.newCategories);
         $http({
             url: contextCorePath + 'api/v1/products',
             method: 'POST',
@@ -88,11 +90,13 @@ angular.module('market-front').controller('adminController', function ($scope, $
         })
             .then(function successCallback(response) {
                 document.getElementById('newProductResponse').innerHTML = response.data.title + ' created';
-                $scope.productDto = null;
+                $scope.productDto = {title: '', price: 0, categories: []};
                 $scope.errors = null;
                 $scope.newCategories.clear();
             }, function errorCallback(response) {
                 $scope.errors = response.data.list;
+                $scope.productDto = {title: '', price: 0, categories: []};
+                $scope.newCategories.clear();
             });
     };
 
@@ -108,30 +112,6 @@ angular.module('market-front').controller('adminController', function ($scope, $
         $location.path('/store');
     };
 
-    $scope.updateProfileDto = function () {
-        if ($scope.newRoles.size === 0) {
-            document.getElementById('message2').innerHTML = 'Должна быть выбрана хотя бы одна роль';
-            document.getElementById('response2').innerHTML = '';
-        }
-        $scope.roles = Array.from($scope.newRoles).join(',');
-        $http({
-            url: contextAuthPath + 'api/v1/profiles',
-            method: 'PUT',
-            data: $scope.profileDto,
-            headers: {'roles': $scope.roles}
-        })
-            .then(function successCallback(response) {
-                if (response.data === "Пользователь обновлён") {
-                    document.getElementById('response2').innerHTML = response.data;
-                    $scope.productDto = null;
-                    $scope.newRoles.clear();
-                }
-            }, function errorCallback(response) {
-                document.getElementById('response2').innerHTML = response.data;
-            });
-    }
-
-
     $scope.createCategoryDto = function () {
         $http({
             url: contextCorePath + 'api/v1/categories',
@@ -139,14 +119,38 @@ angular.module('market-front').controller('adminController', function ($scope, $
             data: $scope.categoryDto,
         })
             .then(function successCallback(response) {
-                if (response.data.value === "Новый продукт создан") {
-                    document.getElementById('response3').innerHTML = response.data.value;
-                    $scope.categoryDto = null;
-                }
+                document.getElementById('newCategoryResponse').innerHTML = response.data.title + ' created';
+                $scope.categoryDto = null;
+                $scope.errors = null;
             }, function errorCallback(response) {
-                document.getElementById('response3').innerHTML = response.data.value;
+                $scope.errors = response.data.list;
             });
     };
+
+    $scope.updateProfileDto = function () {
+        $scope.profileDto.id = $scope.userId;
+        $scope.profileDto.rolesDto = Array.from($scope.newRoles);
+        console.log($scope.profileDto);
+        $http({
+            url: contextAuthPath + 'api/v1/profiles',
+            method: 'PUT',
+            data: $scope.profileDto
+        })
+            .then(function successCallback(response) {
+                document.getElementById('updateProfileResponse').innerHTML = 'Updated';
+                $scope.profileDto = {id: 0, status: null, rolesDto: []};
+                $scope.newRoles.clear();
+                $scope.errors = null;
+                $scope.userId = null;
+                $scope.isUserListAccessible = false;
+                $scope.showUserList();
+            }, function errorCallback(response) {
+                $scope.errors = response.data.list;
+                console.log($scope.errors);
+                $scope.newRoles.clear();
+            });
+    }
+
 
     $scope.addRole = function (role) {
         if ($scope.newRoles.has(role)) {
@@ -157,6 +161,9 @@ angular.module('market-front').controller('adminController', function ($scope, $
     }
 
     $scope.cleanResponse = function () {
-        document.getElementById('successResponse').innerHTML = '';
+        document.getElementById('newProductResponse').innerHTML = '';
+        document.getElementById('newCategoryResponse').innerHTML = '';
+        document.getElementById('updateProfileResponse').innerHTML = '';
+        $scope.errors = null;
     }
 });

@@ -9,17 +9,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.azor.api.auth.ProfileDto;
 import ru.azor.api.exceptions.ClientException;
 import ru.azor.auth.converters.UserConverter;
 import ru.azor.auth.entities.User;
-import ru.azor.auth.services.RoleService;
 import ru.azor.auth.services.UserService;
 
-import java.util.Arrays;
+import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -70,8 +69,9 @@ public class ProfileController {
             }
     )
     @PutMapping()
-    public ResponseEntity<?> updateUser(@RequestBody @Parameter(description = "Изменённый пользователь", required = true) ProfileDto profileDto){
-        userService.updateUserStatusAndRoles(profileDto);
-        return new ResponseEntity<>(userConverter.profileDtoToUser(profileDto), HttpStatus.OK);
+    public ResponseEntity<?> updateUser(@RequestBody @Parameter(description = "Изменённый пользователь", required = true) @Valid ProfileDto profileDto,
+                                        @Parameter(description = "Ошибки валидации", required = true)BindingResult bindingResult){
+        userService.updateUserStatusAndRoles(profileDto, bindingResult);
+        return new ResponseEntity<>(profileDto, HttpStatus.OK);
     }
 }

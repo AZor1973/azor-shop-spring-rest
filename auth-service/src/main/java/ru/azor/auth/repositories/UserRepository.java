@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.azor.api.enums.AccountStatus;
 import ru.azor.auth.entities.User;
 
+import java.math.BigInteger;
 import java.util.Optional;
 
 @Repository
@@ -24,14 +25,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
     void changeStatusByUsername(AccountStatus status, String username);
 
     @Modifying
+    @Query("update User u set u.status = ?1, u.updatedAt = CURRENT_TIMESTAMP where u.id = ?2")
+    void changeStatusById(AccountStatus status, Long id);
+
+    @Modifying
     @Query("update User u set u.enabled = ?1, u.updatedAt = CURRENT_TIMESTAMP where u.username = ?2")
     void changeEnabledByUsername(boolean enabled, String username);
 
     @Modifying
-    @Query(value = "update users_roles set role_id = ?1 where user_id = ?2", nativeQuery = true)
-    void changeRole(Long roleId, Long userId);
-
-    @Modifying
     @Query("update User u set u.updatedAt = CURRENT_TIMESTAMP where u.id = ?1")
     void changeUpdateAt(Long userId);
+
+    @Modifying
+    @Query(value = "delete from users_roles where user_id = ?1", nativeQuery = true)
+    void deleteRolesByUserId(BigInteger userId);
+
+    @Modifying
+    @Query(value = "insert into users_roles (role_id, user_id) values (?1, ?2)", nativeQuery = true)
+    void insertRoleByUserId(BigInteger roleId, BigInteger userId);
 }

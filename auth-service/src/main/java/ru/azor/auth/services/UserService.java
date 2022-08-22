@@ -23,6 +23,7 @@ import ru.azor.auth.entities.Role;
 import ru.azor.auth.entities.User;
 import ru.azor.auth.repositories.UserRepository;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -107,10 +108,19 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void updateUserStatusAndRoles(ProfileDto profileDto) {
+    public void updateUserStatusAndRoles(ProfileDto profileDto, BindingResult bindingResult) {
+//        if (profileDto.getRolesDto().contains(null) || profileDto.getRolesDto().isEmpty()
+//                || profileDto.getRolesDto() == null) {
+//            bindingResult.addError(new ObjectError("profileDto", "Должна быть выбрана хотя бы одна роль"));
+//        }
+        if (bindingResult.hasErrors()) {
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            throw new ValidationException("Ошибка валидации", errors, HttpStatus.BAD_REQUEST);
+        }
         try {
-            userRepository.changeStatusByUsername(profileDto.getStatus(), profileDto.getUsername());
-            profileDto.getRolesDto().forEach(roleDto -> userRepository.changeRole(roleDto.getId(), profileDto.getId()));
+            userRepository.changeStatusById(profileDto.getStatus(), profileDto.getId());
+            userRepository.deleteRolesByUserId(BigInteger.valueOf(profileDto.getId()));
+            profileDto.getRolesDto().forEach(roleDto -> userRepository.insertRoleByUserId(BigInteger.valueOf(roleDto.getId()), BigInteger.valueOf(profileDto.getId())));
             userRepository.changeUpdateAt(profileDto.getId());
         } catch (Exception e) {
             throw new ClientException("Пользователь с идентификатором " + profileDto.getId() + " не найден.", HttpStatus.NOT_FOUND);
